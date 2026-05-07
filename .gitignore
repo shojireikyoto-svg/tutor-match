@@ -38,3 +38,6 @@ cloudflared.exe
 
 # build logs
 build.log
+
+.vercel
+.env*.local

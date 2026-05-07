@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "migrate": "node --env-file=.env.local scripts/migrate.mjs",
+    "vercel-build": "node scripts/migrate.mjs && next build"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { getSql } from "@/lib/db";
 import {
   listMatchRequestsForTutor,
   listReservationsForTutor,
@@ -40,12 +40,12 @@ export default async function TutorDashboard() {
   if (!session) redirect("/login");
   if (session.role !== "tutor") redirect("/dashboard");
 
-  const profile = db
-    .prepare("SELECT * FROM tutor_profiles WHERE user_id = ?")
-    .get(session.id) as TutorRow | undefined;
+  const sql = getSql();
+  const profileRows = await sql`SELECT * FROM tutor_profiles WHERE user_id = ${session.id}`;
+  const profile = profileRows[0] as TutorRow | undefined;
 
-  const matches = listMatchRequestsForTutor(session.id);
-  const reservations = listReservationsForTutor(session.id);
+  const matches = await listMatchRequestsForTutor(session.id);
+  const reservations = await listReservationsForTutor(session.id);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">

@@ -5,7 +5,7 @@ interface SP { q?: string; subject?: string; area?: string; maxRate?: string }
 
 export default async function TutorsPage({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
-  const tutors = listTutors({
+  const tutors = await listTutors({
     q: sp.q, subject: sp.subject, area: sp.area,
     maxRate: sp.maxRate ? Number(sp.maxRate) : undefined,
   });

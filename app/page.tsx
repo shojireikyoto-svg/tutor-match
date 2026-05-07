@@ -45,8 +45,8 @@ const FAQS = [
   },
 ];
 
-export default function Home() {
-  const featured = listTutors().slice(0, 3);
+export default async function Home() {
+  const featured = (await listTutors()).slice(0, 3);
 
   return (
     <div>

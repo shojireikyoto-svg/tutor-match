@@ -19,8 +19,8 @@ export default async function ParentDashboard() {
   if (!session) redirect("/login");
   if (session.role !== "parent") redirect("/tutor/dashboard");
 
-  const matches = listMatchRequestsForParent(session.id);
-  const reservations = listReservationsForParent(session.id);
+  const matches = await listMatchRequestsForParent(session.id);
+  const reservations = await listReservationsForParent(session.id);
   const hasActivity = matches.length > 0 || reservations.length > 0;
 
   return (

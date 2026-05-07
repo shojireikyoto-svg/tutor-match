@@ -2,7 +2,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
-import { db } from "./db";
+import { getSql } from "./db";
 
 const SECRET = new TextEncoder().encode(
   process.env.AUTH_SECRET ?? "dev-secret-change-me-please-1234567890"
@@ -75,10 +75,10 @@ export async function requireSession(role?: Role): Promise<SessionUser> {
   return s;
 }
 
-export function findUserByEmail(email: string) {
-  return db
-    .prepare("SELECT * FROM users WHERE email = ?")
-    .get(email) as
+export async function findUserByEmail(email: string) {
+  const sql = getSql();
+  const rows = await sql`SELECT * FROM users WHERE email = ${email}`;
+  return rows[0] as
     | {
         id: number;
         email: string;

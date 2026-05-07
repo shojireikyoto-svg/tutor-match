@@ -1,4 +1,4 @@
-import { db } from "./db";
+import { getSql } from './db';
 
 export interface TutorListItem {
   id: number;
@@ -19,63 +19,70 @@ export interface TutorDetail extends TutorListItem {
   email: string;
 }
 
-export function listTutors(filters?: {
+export async function listTutors(filters?: {
   q?: string;
   subject?: string;
   area?: string;
   maxRate?: number;
-}): TutorListItem[] {
-  const where: string[] = ["t.published = 1"];
-  const params: Record<string, unknown> = {};
+}): Promise<TutorListItem[]> {
+  const sql = getSql();
+  const conditions: string[] = ['t.published = 1'];
+  const params: unknown[] = [];
+  let idx = 1;
+
   if (filters?.q) {
-    where.push(
-      "(u.name LIKE @q OR t.headline LIKE @q OR t.bio LIKE @q OR t.passed_schools LIKE @q)"
-    );
-    params.q = `%${filters.q}%`;
+    conditions.push(`(u.name ILIKE $${idx} OR t.headline ILIKE $${idx} OR t.bio ILIKE $${idx} OR t.passed_schools ILIKE $${idx})`);
+    params.push(`%${filters.q}%`);
+    idx++;
   }
   if (filters?.subject) {
-    where.push("t.subjects LIKE @subject");
-    params.subject = `%${filters.subject}%`;
+    conditions.push(`t.subjects ILIKE $${idx}`);
+    params.push(`%${filters.subject}%`);
+    idx++;
   }
   if (filters?.area) {
-    where.push("t.areas LIKE @area");
-    params.area = `%${filters.area}%`;
+    conditions.push(`t.areas ILIKE $${idx}`);
+    params.push(`%${filters.area}%`);
+    idx++;
   }
   if (filters?.maxRate) {
-    where.push("t.hourly_rate <= @maxRate");
-    params.maxRate = filters.maxRate;
+    conditions.push(`t.hourly_rate <= $${idx}`);
+    params.push(filters.maxRate);
+    idx++;
   }
-  const sql = `
+
+  const query = `
     SELECT u.id, u.name, t.headline, t.university, t.subjects, t.areas,
            t.hourly_rate, t.experience_years, t.photo_url, t.passed_schools
     FROM tutor_profiles t
     JOIN users u ON u.id = t.user_id
-    WHERE ${where.join(" AND ")}
+    WHERE ${conditions.join(' AND ')}
     ORDER BY t.experience_years DESC, u.id ASC
   `;
-  return db.prepare(sql).all(params) as TutorListItem[];
+  const rows = await sql(query, params);
+  return rows as TutorListItem[];
 }
 
-export function getTutorById(id: number): TutorDetail | undefined {
-  return db
-    .prepare(
-      `SELECT u.id, u.name, u.email, t.headline, t.university, t.subjects, t.areas,
-              t.hourly_rate, t.experience_years, t.photo_url, t.bio, t.passed_schools
-       FROM tutor_profiles t
-       JOIN users u ON u.id = t.user_id
-       WHERE u.id = ? AND t.published = 1`
-    )
-    .get(id) as TutorDetail | undefined;
+export async function getTutorById(id: number): Promise<TutorDetail | undefined> {
+  const sql = getSql();
+  const rows = await sql`
+    SELECT u.id, u.name, u.email, t.headline, t.university, t.subjects, t.areas,
+           t.hourly_rate, t.experience_years, t.photo_url, t.bio, t.passed_schools
+    FROM tutor_profiles t
+    JOIN users u ON u.id = t.user_id
+    WHERE u.id = ${id} AND t.published = 1
+  `;
+  return rows[0] as TutorDetail | undefined;
 }
 
-export function listMatchRequestsForParent(parentId: number) {
-  return db
-    .prepare(
-      `SELECT m.*, u.name AS tutor_name
-       FROM match_requests m JOIN users u ON u.id = m.tutor_id
-       WHERE m.parent_id = ? ORDER BY m.created_at DESC`
-    )
-    .all(parentId) as Array<{
+export async function listMatchRequestsForParent(parentId: number) {
+  const sql = getSql();
+  const rows = await sql`
+    SELECT m.*, u.name AS tutor_name
+    FROM match_requests m JOIN users u ON u.id = m.tutor_id
+    WHERE m.parent_id = ${parentId} ORDER BY m.created_at DESC
+  `;
+  return rows as Array<{
     id: number;
     parent_id: number;
     tutor_id: number;
@@ -86,14 +93,14 @@ export function listMatchRequestsForParent(parentId: number) {
   }>;
 }
 
-export function listMatchRequestsForTutor(tutorId: number) {
-  return db
-    .prepare(
-      `SELECT m.*, u.name AS parent_name
-       FROM match_requests m JOIN users u ON u.id = m.parent_id
-       WHERE m.tutor_id = ? ORDER BY m.created_at DESC`
-    )
-    .all(tutorId) as Array<{
+export async function listMatchRequestsForTutor(tutorId: number) {
+  const sql = getSql();
+  const rows = await sql`
+    SELECT m.*, u.name AS parent_name
+    FROM match_requests m JOIN users u ON u.id = m.parent_id
+    WHERE m.tutor_id = ${tutorId} ORDER BY m.created_at DESC
+  `;
+  return rows as Array<{
     id: number;
     parent_id: number;
     tutor_id: number;
@@ -104,14 +111,14 @@ export function listMatchRequestsForTutor(tutorId: number) {
   }>;
 }
 
-export function listReservationsForParent(parentId: number) {
-  return db
-    .prepare(
-      `SELECT r.*, u.name AS tutor_name
-       FROM reservations r JOIN users u ON u.id = r.tutor_id
-       WHERE r.parent_id = ? ORDER BY r.starts_at DESC`
-    )
-    .all(parentId) as Array<{
+export async function listReservationsForParent(parentId: number) {
+  const sql = getSql();
+  const rows = await sql`
+    SELECT r.*, u.name AS tutor_name
+    FROM reservations r JOIN users u ON u.id = r.tutor_id
+    WHERE r.parent_id = ${parentId} ORDER BY r.starts_at DESC
+  `;
+  return rows as Array<{
     id: number;
     parent_id: number;
     tutor_id: number;
@@ -123,14 +130,14 @@ export function listReservationsForParent(parentId: number) {
   }>;
 }
 
-export function listReservationsForTutor(tutorId: number) {
-  return db
-    .prepare(
-      `SELECT r.*, u.name AS parent_name
-       FROM reservations r JOIN users u ON u.id = r.parent_id
-       WHERE r.tutor_id = ? ORDER BY r.starts_at DESC`
-    )
-    .all(tutorId) as Array<{
+export async function listReservationsForTutor(tutorId: number) {
+  const sql = getSql();
+  const rows = await sql`
+    SELECT r.*, u.name AS parent_name
+    FROM reservations r JOIN users u ON u.id = r.parent_id
+    WHERE r.tutor_id = ${tutorId} ORDER BY r.starts_at DESC
+  `;
+  return rows as Array<{
     id: number;
     parent_id: number;
     tutor_id: number;

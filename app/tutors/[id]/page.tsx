@@ -17,7 +17,7 @@ const CONCERNS = [
 
 export default async function TutorDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const tutor = getTutorById(Number(id));
+  const tutor = await getTutorById(Number(id));
   if (!tutor) notFound();
 
   const session = await getSession();

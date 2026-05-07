@@ -1,87 +1,79 @@
-import Database from "better-sqlite3";
-import path from "node:path";
-import fs from "node:fs";
-
-const DATA_DIR = path.join(process.cwd(), "data");
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-
-const dbPath = path.join(DATA_DIR, "app.db");
+import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
 
 declare global {
   // eslint-disable-next-line no-var
-  var __db: Database.Database | undefined;
+  var __neonSql: NeonQueryFunction<false, false> | undefined;
 }
 
-export const db: Database.Database =
-  global.__db ?? new Database(dbPath);
-
-if (!global.__db) {
-  db.pragma("journal_mode = WAL");
-  db.pragma("foreign_keys = ON");
-  global.__db = db;
+function createSql(): NeonQueryFunction<false, false> {
+  if (global.__neonSql) return global.__neonSql;
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error('DATABASE_URL environment variable is not set');
+  }
+  global.__neonSql = neon(connectionString);
+  return global.__neonSql;
 }
 
-export function initSchema() {
-  db.exec(`
+export function getSql(): NeonQueryFunction<false, false> {
+  return createSql();
+}
+
+export async function initializeDatabase() {
+  const sql = getSql();
+  await sql`
     CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      email TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL,
-      role TEXT NOT NULL CHECK (role IN ('parent','tutor')),
+      id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
-      created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-
+      email TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      role TEXT NOT NULL CHECK(role IN ('parent','tutor')),
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `;
+  await sql`
     CREATE TABLE IF NOT EXISTS parent_profiles (
-      user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+      user_id INTEGER PRIMARY KEY REFERENCES users(id),
       child_grade TEXT,
-      target_school TEXT,
-      area TEXT,
+      target_schools TEXT,
       note TEXT
-    );
-
+    )
+  `;
+  await sql`
     CREATE TABLE IF NOT EXISTS tutor_profiles (
-      user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
-      headline TEXT,
-      university TEXT,
-      bio TEXT,
-      subjects TEXT,
-      areas TEXT,
-      hourly_rate INTEGER,
-      experience_years INTEGER,
-      passed_schools TEXT,
+      user_id INTEGER PRIMARY KEY REFERENCES users(id),
+      headline TEXT NOT NULL DEFAULT '',
+      bio TEXT NOT NULL DEFAULT '',
+      university TEXT NOT NULL DEFAULT '',
+      subjects TEXT NOT NULL DEFAULT '',
+      areas TEXT NOT NULL DEFAULT '',
+      hourly_rate INTEGER NOT NULL DEFAULT 5000,
+      experience_years INTEGER NOT NULL DEFAULT 0,
       photo_url TEXT,
-      published INTEGER NOT NULL DEFAULT 1
-    );
-
+      passed_schools TEXT NOT NULL DEFAULT '',
+      published INTEGER NOT NULL DEFAULT 0
+    )
+  `;
+  await sql`
     CREATE TABLE IF NOT EXISTS match_requests (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      parent_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      tutor_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      message TEXT,
-      status TEXT NOT NULL DEFAULT 'pending'
-        CHECK (status IN ('pending','accepted','declined','cancelled')),
-      created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-
+      id SERIAL PRIMARY KEY,
+      parent_id INTEGER NOT NULL REFERENCES users(id),
+      tutor_id INTEGER NOT NULL REFERENCES users(id),
+      message TEXT NOT NULL DEFAULT '',
+      status TEXT NOT NULL DEFAULT 'pending',
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `;
+  await sql`
     CREATE TABLE IF NOT EXISTS reservations (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      parent_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      tutor_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      starts_at TEXT NOT NULL,
+      id SERIAL PRIMARY KEY,
+      parent_id INTEGER NOT NULL REFERENCES users(id),
+      tutor_id INTEGER NOT NULL REFERENCES users(id),
+      starts_at TIMESTAMPTZ NOT NULL,
       duration_min INTEGER NOT NULL DEFAULT 60,
-      note TEXT,
-      status TEXT NOT NULL DEFAULT 'requested'
-        CHECK (status IN ('requested','confirmed','declined','cancelled','completed')),
-      created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-
-    CREATE INDEX IF NOT EXISTS idx_tutor_pub ON tutor_profiles(published);
-    CREATE INDEX IF NOT EXISTS idx_match_parent ON match_requests(parent_id);
-    CREATE INDEX IF NOT EXISTS idx_match_tutor ON match_requests(tutor_id);
-    CREATE INDEX IF NOT EXISTS idx_res_parent ON reservations(parent_id);
-    CREATE INDEX IF NOT EXISTS idx_res_tutor ON reservations(tutor_id);
-  `);
+      note TEXT NOT NULL DEFAULT '',
+      status TEXT NOT NULL DEFAULT 'requested',
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `;
 }
-
-initSchema();

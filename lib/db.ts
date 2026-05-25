@@ -1,22 +1,42 @@
-import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
+import pg from 'pg';
+
+// pgのデフォルト型パーサーを上書きして日付をJS Dateオブジェクトではなく文字列で返す
+// （NeonのHTTP APIが返す形式と統一するため）
+pg.types.setTypeParser(1082, (v: string) => v);  // date
+pg.types.setTypeParser(1114, (v: string) => v);  // timestamp
+pg.types.setTypeParser(1184, (v: string) => v);  // timestamptz
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SqlFn = (strings: TemplateStringsArray, ...values: any[]) => Promise<any[]>;
 
 declare global {
   // eslint-disable-next-line no-var
-  var __neonSql: NeonQueryFunction<false, false> | undefined;
+  var __pgPool: pg.Pool | undefined;
+  // eslint-disable-next-line no-var
+  var __sqlFn: SqlFn | undefined;
 }
 
-function createSql(): NeonQueryFunction<false, false> {
-  if (global.__neonSql) return global.__neonSql;
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) {
-    throw new Error('DATABASE_URL environment variable is not set');
+function createSql(): SqlFn {
+  if (!global.__pgPool) {
+    const connectionString = process.env.DATABASE_URL;
+    if (!connectionString) throw new Error('DATABASE_URL is not set');
+    global.__pgPool = new pg.Pool({ connectionString });
   }
-  global.__neonSql = neon(connectionString);
-  return global.__neonSql;
+  const pool = global.__pgPool;
+  return async (strings, ...values) => {
+    let text = '';
+    strings.forEach((s, i) => {
+      text += s;
+      if (i < values.length) text += `$${i + 1}`;
+    });
+    const res = await pool.query(text, values);
+    return res.rows;
+  };
 }
 
-export function getSql(): NeonQueryFunction<false, false> {
-  return createSql();
+export function getSql(): SqlFn {
+  if (!global.__sqlFn) global.__sqlFn = createSql();
+  return global.__sqlFn;
 }
 
 export async function initializeDatabase() {

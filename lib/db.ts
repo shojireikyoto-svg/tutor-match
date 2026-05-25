@@ -21,58 +21,49 @@ export function getSql(): NeonQueryFunction<false, false> {
 
 export async function initializeDatabase() {
   const sql = getSql();
+  await sql`CREATE EXTENSION IF NOT EXISTS "pgcrypto"`;
   await sql`
     CREATE TABLE IF NOT EXISTS users (
-      id SERIAL PRIMARY KEY,
-      name TEXT NOT NULL,
-      email TEXT NOT NULL UNIQUE,
-      password_hash TEXT NOT NULL,
-      role TEXT NOT NULL CHECK(role IN ('parent','tutor')),
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name VARCHAR(100) NOT NULL,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      password_hash VARCHAR(255) NOT NULL,
+      phone_number VARCHAR(20) NOT NULL DEFAULT '',
+      is_verified BOOLEAN DEFAULT FALSE,
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
   `;
   await sql`
-    CREATE TABLE IF NOT EXISTS parent_profiles (
-      user_id INTEGER PRIMARY KEY REFERENCES users(id),
-      child_grade TEXT,
-      target_schools TEXT,
-      note TEXT
-    )
-  `;
-  await sql`
-    CREATE TABLE IF NOT EXISTS tutor_profiles (
-      user_id INTEGER PRIMARY KEY REFERENCES users(id),
-      headline TEXT NOT NULL DEFAULT '',
-      bio TEXT NOT NULL DEFAULT '',
-      university TEXT NOT NULL DEFAULT '',
-      subjects TEXT NOT NULL DEFAULT '',
-      areas TEXT NOT NULL DEFAULT '',
-      hourly_rate INTEGER NOT NULL DEFAULT 5000,
-      experience_years INTEGER NOT NULL DEFAULT 0,
-      photo_url TEXT,
-      passed_schools TEXT NOT NULL DEFAULT '',
-      published INTEGER NOT NULL DEFAULT 0
-    )
-  `;
-  await sql`
-    CREATE TABLE IF NOT EXISTS match_requests (
-      id SERIAL PRIMARY KEY,
-      parent_id INTEGER NOT NULL REFERENCES users(id),
-      tutor_id INTEGER NOT NULL REFERENCES users(id),
-      message TEXT NOT NULL DEFAULT '',
-      status TEXT NOT NULL DEFAULT 'pending',
+    CREATE TABLE IF NOT EXISTS items (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      seller_id UUID NOT NULL REFERENCES users(id),
+      buyer_id UUID REFERENCES users(id),
+      title VARCHAR(100) NOT NULL,
+      category VARCHAR(50) NOT NULL,
+      item_status VARCHAR(20) NOT NULL DEFAULT 'available',
+      price INT NOT NULL DEFAULT 0,
+      images JSONB NOT NULL DEFAULT '[]',
+      description TEXT NOT NULL DEFAULT '',
+      pickup_address VARCHAR(255) NOT NULL DEFAULT '',
+      pickup_date DATE,
+      pickup_time_slot VARCHAR(20),
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
   `;
   await sql`
-    CREATE TABLE IF NOT EXISTS reservations (
-      id SERIAL PRIMARY KEY,
-      parent_id INTEGER NOT NULL REFERENCES users(id),
-      tutor_id INTEGER NOT NULL REFERENCES users(id),
-      starts_at TIMESTAMPTZ NOT NULL,
-      duration_min INTEGER NOT NULL DEFAULT 60,
-      note TEXT NOT NULL DEFAULT '',
-      status TEXT NOT NULL DEFAULT 'requested',
+    CREATE TABLE IF NOT EXISTS matchings (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      item_id UUID NOT NULL REFERENCES items(id),
+      pickup_date DATE NOT NULL,
+      pickup_time_slot VARCHAR(20) NOT NULL,
+      delivery_date DATE NOT NULL,
+      delivery_time_slot VARCHAR(20) NOT NULL,
+      pickup_address VARCHAR(255) NOT NULL,
+      delivery_address VARCHAR(255) NOT NULL,
+      delivery_fee INT NOT NULL DEFAULT 0,
+      stripe_intent_id VARCHAR(255) UNIQUE,
+      driver_id UUID REFERENCES users(id),
+      matching_status VARCHAR(20) NOT NULL DEFAULT 'pending',
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
   `;

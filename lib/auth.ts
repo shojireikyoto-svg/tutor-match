@@ -7,15 +7,16 @@ import { getSql } from "./db";
 const SECRET = new TextEncoder().encode(
   process.env.AUTH_SECRET ?? "dev-secret-change-me-please-1234567890"
 );
-const COOKIE = "tm_session";
-
-export type Role = "parent" | "tutor";
+const COOKIE = "ur_session";
 
 export interface SessionUser {
-  id: number;
+  id: string;
   email: string;
-  role: Role;
   name: string;
+}
+
+export function isUniversityEmail(email: string): boolean {
+  return /\.ac\.jp$/i.test(email);
 }
 
 export async function hashPassword(pw: string) {
@@ -58,9 +59,8 @@ export async function getSession(): Promise<SessionUser | null> {
   try {
     const { payload } = await jwtVerify(token, SECRET);
     return {
-      id: payload.id as number,
+      id: payload.id as string,
       email: payload.email as string,
-      role: payload.role as Role,
       name: payload.name as string,
     };
   } catch {
@@ -68,10 +68,9 @@ export async function getSession(): Promise<SessionUser | null> {
   }
 }
 
-export async function requireSession(role?: Role): Promise<SessionUser> {
+export async function requireSession(): Promise<SessionUser> {
   const s = await getSession();
   if (!s) throw new Error("UNAUTHORIZED");
-  if (role && s.role !== role) throw new Error("FORBIDDEN");
   return s;
 }
 
@@ -79,12 +78,6 @@ export async function findUserByEmail(email: string) {
   const sql = getSql();
   const rows = await sql`SELECT * FROM users WHERE email = ${email}`;
   return rows[0] as
-    | {
-        id: number;
-        email: string;
-        password_hash: string;
-        role: Role;
-        name: string;
-      }
+    | { id: string; email: string; password_hash: string; name: string; phone_number: string }
     | undefined;
 }

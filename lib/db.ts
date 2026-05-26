@@ -20,7 +20,10 @@ function createSql(): SqlFn {
   if (!global.__pgPool) {
     const connectionString = process.env.DATABASE_URL;
     if (!connectionString) throw new Error('DATABASE_URL is not set');
-    global.__pgPool = new pg.Pool({ connectionString });
+    global.__pgPool = new pg.Pool({
+      connectionString,
+      ssl: connectionString.includes('localhost') ? false : { rejectUnauthorized: false },
+    });
   }
   const pool = global.__pgPool;
   return async (strings, ...values) => {

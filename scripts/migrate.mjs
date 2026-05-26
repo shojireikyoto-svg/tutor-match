@@ -1,6 +1,9 @@
-import { neon } from '@neondatabase/serverless';
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
+import pg from 'pg';
+
+// 日付系をJS Dateオブジェクトではなく文字列で返す（lib/db.tsと統一）
+pg.types.setTypeParser(1082, (v) => v);
+pg.types.setTypeParser(1114, (v) => v);
+pg.types.setTypeParser(1184, (v) => v);
 
 const url = process.env.DATABASE_URL;
 if (!url) {
@@ -8,23 +11,21 @@ if (!url) {
   process.exit(0);
 }
 
-const sql = neon(url);
+const pool = new pg.Pool({ connectionString: url, ssl: { rejectUnauthorized: false } });
+
+async function query(text) {
+  const client = await pool.connect();
+  try {
+    await client.query(text);
+  } finally {
+    client.release();
+  }
+}
 
 async function migrate() {
-  // Drop old tables
-  await sql`DROP TABLE IF EXISTS reservations CASCADE`;
-  await sql`DROP TABLE IF EXISTS match_requests CASCADE`;
-  await sql`DROP TABLE IF EXISTS tutor_profiles CASCADE`;
-  await sql`DROP TABLE IF EXISTS parent_profiles CASCADE`;
-  await sql`DROP TABLE IF EXISTS matchings CASCADE`;
-  await sql`DROP TABLE IF EXISTS items CASCADE`;
-  await sql`DROP TABLE IF EXISTS users CASCADE`;
+  await query(`CREATE EXTENSION IF NOT EXISTS "pgcrypto"`);
 
-  // Enable pgcrypto for gen_random_uuid()
-  await sql`CREATE EXTENSION IF NOT EXISTS "pgcrypto"`;
-
-  // Create users
-  await sql`
+  await query(`
     CREATE TABLE IF NOT EXISTS users (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       name VARCHAR(100) NOT NULL,
@@ -34,10 +35,9 @@ async function migrate() {
       is_verified BOOLEAN DEFAULT FALSE,
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
-  `;
+  `);
 
-  // Create items
-  await sql`
+  await query(`
     CREATE TABLE IF NOT EXISTS items (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       seller_id UUID NOT NULL REFERENCES users(id),
@@ -53,10 +53,9 @@ async function migrate() {
       pickup_time_slot VARCHAR(20),
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
-  `;
+  `);
 
-  // Create matchings
-  await sql`
+  await query(`
     CREATE TABLE IF NOT EXISTS matchings (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       item_id UUID NOT NULL REFERENCES items(id),
@@ -72,7 +71,7 @@ async function migrate() {
       matching_status VARCHAR(20) NOT NULL DEFAULT 'pending',
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
-  `;
+  `);
 
   console.log('[migrate] Uni-Relay tables ready.');
 }
@@ -84,5 +83,7 @@ async function migrate() {
   } catch (err) {
     console.error('[migrate] Error:', err);
     process.exit(1);
+  } finally {
+    await pool.end();
   }
 })();

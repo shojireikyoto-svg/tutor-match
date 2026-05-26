@@ -5,6 +5,7 @@ import {
   clearSession,
   findUserByEmail,
   hashPassword,
+  isUniversityEmail,
   requireSession,
   setSessionCookie,
   verifyPassword,
@@ -13,13 +14,16 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 export async function signupAction(_prev: unknown, formData: FormData) {
-  const role = String(formData.get("role")) as "parent" | "tutor";
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const name = String(formData.get("name") ?? "").trim();
+  const phone_number = String(formData.get("phone_number") ?? "").trim();
   const password = String(formData.get("password") ?? "");
 
-  if (!email || !name || password.length < 6 || !["parent", "tutor"].includes(role)) {
+  if (!email || !name || password.length < 6) {
     return { error: "入力内容を確認してください（パスワードは6文字以上）" };
+  }
+  if (!isUniversityEmail(email)) {
+    return { error: "大学メールアドレス（*.ac.jp）でご登録ください" };
   }
   if (await findUserByEmail(email)) {
     return { error: "このメールアドレスは既に登録されています" };
@@ -28,28 +32,13 @@ export async function signupAction(_prev: unknown, formData: FormData) {
   const sql = getSql();
   const hash = await hashPassword(password);
   const rows = await sql`
-    INSERT INTO users (name, email, password_hash, role)
-    VALUES (${name}, ${email}, ${hash}, ${role})
+    INSERT INTO users (name, email, password_hash, phone_number)
+    VALUES (${name}, ${email}, ${hash}, ${phone_number})
     RETURNING id
   `;
-  const userId = Number(rows[0].id);
-
-  if (role === "parent") {
-    await sql`
-      INSERT INTO parent_profiles (user_id, child_grade, target_schools, note)
-      VALUES (${userId}, '', '', '')
-    `;
-  } else {
-    await sql`
-      INSERT INTO tutor_profiles
-        (user_id, headline, university, bio, subjects, areas, hourly_rate, experience_years, passed_schools, photo_url, published)
-      VALUES
-        (${userId}, '', '', '', '', '', 0, 0, '', '', 0)
-    `;
-  }
-
-  await setSessionCookie({ id: userId, email, role, name });
-  redirect(role === "parent" ? "/dashboard" : "/tutor/dashboard");
+  const userId = String(rows[0].id);
+  await setSessionCookie({ id: userId, email, name });
+  redirect("/home");
 }
 
 export async function loginAction(_prev: unknown, formData: FormData) {
@@ -59,8 +48,8 @@ export async function loginAction(_prev: unknown, formData: FormData) {
   if (!u || !(await verifyPassword(password, u.password_hash))) {
     return { error: "メールアドレスまたはパスワードが正しくありません" };
   }
-  await setSessionCookie({ id: u.id, email: u.email, role: u.role, name: u.name });
-  redirect(u.role === "parent" ? "/dashboard" : "/tutor/dashboard");
+  await setSessionCookie({ id: u.id, email: u.email, name: u.name });
+  redirect("/home");
 }
 
 export async function logoutAction() {
@@ -68,111 +57,96 @@ export async function logoutAction() {
   redirect("/");
 }
 
-export async function createMatchRequestAction(formData: FormData): Promise<void> {
-  const session = await requireSession("parent");
+export async function createItemAction(_prev: unknown, formData: FormData) {
+  const session = await requireSession();
   const sql = getSql();
-  const tutorId = Number(formData.get("tutorId"));
-  const message = String(formData.get("message") ?? "").trim();
-  if (!tutorId || !message) return;
+
+  const title = String(formData.get("title") ?? "").trim();
+  const category = String(formData.get("category") ?? "").trim();
+  const price = Number(formData.get("price") ?? 0);
+  const description = String(formData.get("description") ?? "").trim();
+  const pickup_address = String(formData.get("pickup_address") ?? "").trim();
+  const pickup_date = String(formData.get("pickup_date") ?? "").trim();
+  const pickup_time_slot = String(formData.get("pickup_time_slot") ?? "").trim();
+  const image_url = String(formData.get("image_url") ?? "").trim();
+
+  if (!title || !category || !pickup_address || !pickup_date || !pickup_time_slot) {
+    return { error: "必須項目をすべて入力してください" };
+  }
+
+  const images = image_url ? JSON.stringify([image_url]) : JSON.stringify([]);
+
   await sql`
-    INSERT INTO match_requests (parent_id, tutor_id, message)
-    VALUES (${session.id}, ${tutorId}, ${message})
+    INSERT INTO items (seller_id, title, category, price, description, pickup_address, pickup_date, pickup_time_slot, images)
+    VALUES (${session.id}, ${title}, ${category}, ${price}, ${description}, ${pickup_address}, ${pickup_date}, ${pickup_time_slot}, ${images})
+  `;
+
+  revalidatePath("/items");
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
+}
+
+const BASE_FEE = 5000;
+const DISTANCE_FEE_PER_KM = 500;
+const TIMELAG_FEE_PER_DAY = 1500;
+const ASSUMED_KM = 8;
+
+function calcDeliveryFee(pickupDate: string, deliveryDate: string): number {
+  const p = new Date(pickupDate);
+  const d = new Date(deliveryDate);
+  const diffDays = Math.round((d.getTime() - p.getTime()) / 86400000);
+  if (diffDays < 0 || diffDays > 3) return -1;
+  return BASE_FEE + DISTANCE_FEE_PER_KM * ASSUMED_KM + (diffDays > 0 ? TIMELAG_FEE_PER_DAY * diffDays : 0);
+}
+
+export async function createMatchingAction(_prev: unknown, formData: FormData) {
+  const session = await requireSession();
+  const sql = getSql();
+
+  const item_id = String(formData.get("item_id") ?? "");
+  const delivery_date = String(formData.get("delivery_date") ?? "").trim();
+  const delivery_time_slot = String(formData.get("delivery_time_slot") ?? "").trim();
+  const delivery_address = String(formData.get("delivery_address") ?? "").trim();
+
+  if (!item_id || !delivery_date || !delivery_time_slot || !delivery_address) {
+    return { error: "必須項目をすべて入力してください" };
+  }
+
+  const itemRows = await sql`SELECT * FROM items WHERE id = ${item_id} AND item_status = 'available'`;
+  const item = itemRows[0];
+  if (!item) return { error: "商品が見つからないか、既にマッチング済みです" };
+  if (item.seller_id === session.id) return { error: "自分の出品商品は購入できません" };
+
+  const delivery_fee = calcDeliveryFee(String(item.pickup_date), delivery_date);
+  if (delivery_fee < 0) {
+    return { error: "搬入希望日は搬出日から3日以内で選択してください（倉庫レスルール）" };
+  }
+
+  await sql`
+    INSERT INTO matchings (item_id, pickup_date, pickup_time_slot, delivery_date, delivery_time_slot, pickup_address, delivery_address, delivery_fee)
+    VALUES (${item_id}, ${item.pickup_date}, ${item.pickup_time_slot}, ${delivery_date}, ${delivery_time_slot}, ${item.pickup_address}, ${delivery_address}, ${delivery_fee})
+  `;
+
+  await sql`
+    UPDATE items SET item_status = 'matched', buyer_id = ${session.id}
+    WHERE id = ${item_id}
+  `;
+
+  revalidatePath("/items");
+  revalidatePath(`/items/${item_id}`);
+  redirect("/dashboard?tab=purchases");
+}
+
+export async function updateItemStatusAction(formData: FormData) {
+  const session = await requireSession();
+  const sql = getSql();
+  const item_id = String(formData.get("item_id") ?? "");
+  const status = String(formData.get("status") ?? "");
+  const valid = ["available", "matched", "picked_up", "delivered"];
+  if (!valid.includes(status)) return;
+  await sql`
+    UPDATE items SET item_status = ${status}
+    WHERE id = ${item_id} AND seller_id = ${session.id}
   `;
   revalidatePath("/dashboard");
-  redirect("/dashboard?tab=matches");
-}
-
-export async function respondMatchAction(formData: FormData): Promise<void> {
-  const session = await requireSession("tutor");
-  const sql = getSql();
-  const id = Number(formData.get("id"));
-  const action = String(formData.get("action"));
-  const status =
-    action === "accept" ? "accepted" : action === "decline" ? "declined" : null;
-  if (!id || !status) return;
-  await sql`
-    UPDATE match_requests SET status = ${status}
-    WHERE id = ${id} AND tutor_id = ${session.id}
-  `;
-  revalidatePath("/tutor/dashboard");
-}
-
-export async function createReservationAction(formData: FormData): Promise<void> {
-  const session = await requireSession("parent");
-  const sql = getSql();
-  const tutorId = Number(formData.get("tutorId"));
-  const date = String(formData.get("date") ?? "");
-  const time = String(formData.get("time") ?? "");
-  const duration = Number(formData.get("duration") ?? 60);
-  const note = String(formData.get("note") ?? "");
-  if (!tutorId || !date || !time) return;
-  const startsAt = `${date} ${time}:00`;
-  await sql`
-    INSERT INTO reservations (parent_id, tutor_id, starts_at, duration_min, note)
-    VALUES (${session.id}, ${tutorId}, ${startsAt}, ${duration}, ${note})
-  `;
-  revalidatePath("/dashboard");
-  redirect("/dashboard?tab=reservations");
-}
-
-export async function respondReservationAction(formData: FormData): Promise<void> {
-  const session = await requireSession("tutor");
-  const sql = getSql();
-  const id = Number(formData.get("id"));
-  const action = String(formData.get("action"));
-  const map: Record<string, string> = {
-    confirm: "confirmed",
-    decline: "declined",
-    complete: "completed",
-  };
-  const status = map[action];
-  if (!id || !status) return;
-  await sql`
-    UPDATE reservations SET status = ${status}
-    WHERE id = ${id} AND tutor_id = ${session.id}
-  `;
-  revalidatePath("/tutor/dashboard");
-}
-
-export async function cancelReservationAction(formData: FormData) {
-  const session = await requireSession("parent");
-  const sql = getSql();
-  const id = Number(formData.get("id"));
-  await sql`
-    UPDATE reservations SET status = 'cancelled'
-    WHERE id = ${id} AND parent_id = ${session.id}
-  `;
-  revalidatePath("/dashboard");
-}
-
-export async function updateTutorProfileAction(formData: FormData) {
-  const session = await requireSession("tutor");
-  const sql = getSql();
-  const headline = String(formData.get("headline") ?? "");
-  const university = String(formData.get("university") ?? "");
-  const bio = String(formData.get("bio") ?? "");
-  const subjects = String(formData.get("subjects") ?? "");
-  const areas = String(formData.get("areas") ?? "");
-  const hourly_rate = Number(formData.get("hourly_rate") ?? 0);
-  const experience_years = Number(formData.get("experience_years") ?? 0);
-  const passed_schools = String(formData.get("passed_schools") ?? "");
-  const photo_url = String(formData.get("photo_url") ?? "");
-  const published = formData.get("published") === "on" ? 1 : 0;
-
-  await sql`
-    UPDATE tutor_profiles
-    SET headline = ${headline},
-        university = ${university},
-        bio = ${bio},
-        subjects = ${subjects},
-        areas = ${areas},
-        hourly_rate = ${hourly_rate},
-        experience_years = ${experience_years},
-        passed_schools = ${passed_schools},
-        photo_url = ${photo_url},
-        published = ${published}
-    WHERE user_id = ${session.id}
-  `;
-  revalidatePath("/tutor/dashboard");
-  revalidatePath("/tutors");
 }

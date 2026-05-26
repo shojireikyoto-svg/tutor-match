@@ -1,150 +1,97 @@
-import { getSql } from './db';
+import "server-only";
+import { getSql } from "./db";
 
-export interface TutorListItem {
-  id: number;
-  name: string;
-  headline: string;
-  university: string;
-  subjects: string;
-  areas: string;
-  hourly_rate: number;
-  experience_years: number;
-  photo_url: string | null;
-  passed_schools: string;
-}
+export type Item = {
+  id: string;
+  seller_id: string;
+  buyer_id: string | null;
+  title: string;
+  category: string;
+  item_status: string;
+  price: number;
+  images: string[];
+  description: string;
+  pickup_address: string;
+  pickup_date: string | null;
+  pickup_time_slot: string | null;
+  created_at: string;
+  seller_name: string;
+};
 
-export interface TutorDetail extends TutorListItem {
-  bio: string;
-  passed_schools: string;
-  email: string;
-}
+export type Matching = {
+  id: string;
+  item_id: string;
+  pickup_date: string;
+  pickup_time_slot: string;
+  delivery_date: string;
+  delivery_time_slot: string;
+  pickup_address: string;
+  delivery_address: string;
+  delivery_fee: number;
+  stripe_intent_id: string | null;
+  driver_id: string | null;
+  matching_status: string;
+  created_at: string;
+};
 
-export async function listTutors(filters?: {
-  q?: string;
-  subject?: string;
-  area?: string;
-  maxRate?: number;
-}): Promise<TutorListItem[]> {
+export async function listAvailableItems(category?: string): Promise<Item[]> {
   const sql = getSql();
-  const conditions: string[] = ['t.published = 1'];
-  const params: unknown[] = [];
-  let idx = 1;
-
-  if (filters?.q) {
-    conditions.push(`(u.name ILIKE $${idx} OR t.headline ILIKE $${idx} OR t.bio ILIKE $${idx} OR t.passed_schools ILIKE $${idx})`);
-    params.push(`%${filters.q}%`);
-    idx++;
-  }
-  if (filters?.subject) {
-    conditions.push(`t.subjects ILIKE $${idx}`);
-    params.push(`%${filters.subject}%`);
-    idx++;
-  }
-  if (filters?.area) {
-    conditions.push(`t.areas ILIKE $${idx}`);
-    params.push(`%${filters.area}%`);
-    idx++;
-  }
-  if (filters?.maxRate) {
-    conditions.push(`t.hourly_rate <= $${idx}`);
-    params.push(filters.maxRate);
-    idx++;
-  }
-
-  const query = `
-    SELECT u.id, u.name, t.headline, t.university, t.subjects, t.areas,
-           t.hourly_rate, t.experience_years, t.photo_url, t.passed_schools
-    FROM tutor_profiles t
-    JOIN users u ON u.id = t.user_id
-    WHERE ${conditions.join(' AND ')}
-    ORDER BY t.experience_years DESC, u.id ASC
-  `;
-  const rows = await sql(query, params);
-  return rows as TutorListItem[];
+  const rows = category
+    ? await sql`
+        SELECT i.*, u.name as seller_name
+        FROM items i JOIN users u ON u.id = i.seller_id
+        WHERE i.item_status = 'available' AND i.category = ${category}
+        ORDER BY i.created_at DESC
+      `
+    : await sql`
+        SELECT i.*, u.name as seller_name
+        FROM items i JOIN users u ON u.id = i.seller_id
+        WHERE i.item_status = 'available'
+        ORDER BY i.created_at DESC
+      `;
+  return rows.map((r) => ({ ...r, images: r.images ?? [] })) as Item[];
 }
 
-export async function getTutorById(id: number): Promise<TutorDetail | undefined> {
+export async function getItemById(id: string): Promise<Item | null> {
   const sql = getSql();
   const rows = await sql`
-    SELECT u.id, u.name, u.email, t.headline, t.university, t.subjects, t.areas,
-           t.hourly_rate, t.experience_years, t.photo_url, t.bio, t.passed_schools
-    FROM tutor_profiles t
-    JOIN users u ON u.id = t.user_id
-    WHERE u.id = ${id} AND t.published = 1
+    SELECT i.*, u.name as seller_name
+    FROM items i JOIN users u ON u.id = i.seller_id
+    WHERE i.id = ${id}
   `;
-  return rows[0] as TutorDetail | undefined;
+  if (!rows[0]) return null;
+  const r = rows[0];
+  return { ...r, images: r.images ?? [] } as Item;
 }
 
-export async function listMatchRequestsForParent(parentId: number) {
+export async function getMyListings(sellerId: string): Promise<Item[]> {
   const sql = getSql();
   const rows = await sql`
-    SELECT m.*, u.name AS tutor_name
-    FROM match_requests m JOIN users u ON u.id = m.tutor_id
-    WHERE m.parent_id = ${parentId} ORDER BY m.created_at DESC
+    SELECT i.*, u.name as seller_name
+    FROM items i JOIN users u ON u.id = i.seller_id
+    WHERE i.seller_id = ${sellerId}
+    ORDER BY i.created_at DESC
   `;
-  return rows as Array<{
-    id: number;
-    parent_id: number;
-    tutor_id: number;
-    message: string;
-    status: string;
-    created_at: string;
-    tutor_name: string;
-  }>;
+  return rows.map((r) => ({ ...r, images: r.images ?? [] })) as Item[];
 }
 
-export async function listMatchRequestsForTutor(tutorId: number) {
+export async function getMyPurchases(buyerId: string): Promise<(Item & { matching_id: string; matching_status: string; delivery_date: string; delivery_fee: number })[]> {
   const sql = getSql();
   const rows = await sql`
-    SELECT m.*, u.name AS parent_name
-    FROM match_requests m JOIN users u ON u.id = m.parent_id
-    WHERE m.tutor_id = ${tutorId} ORDER BY m.created_at DESC
+    SELECT i.*, u.name as seller_name,
+      m.id as matching_id, m.delivery_date, m.delivery_time_slot,
+      m.delivery_address, m.delivery_fee, m.matching_status
+    FROM items i
+    JOIN users u ON u.id = i.seller_id
+    JOIN matchings m ON m.item_id = i.id
+    WHERE i.buyer_id = ${buyerId}
+    ORDER BY m.created_at DESC
   `;
-  return rows as Array<{
-    id: number;
-    parent_id: number;
-    tutor_id: number;
-    message: string;
-    status: string;
-    created_at: string;
-    parent_name: string;
-  }>;
+  return rows.map((r) => ({ ...r, images: r.images ?? [] })) as (Item & { matching_id: string; matching_status: string; delivery_date: string; delivery_fee: number })[];
 }
 
-export async function listReservationsForParent(parentId: number) {
+export async function getMatchingByItemId(itemId: string): Promise<Matching | null> {
   const sql = getSql();
-  const rows = await sql`
-    SELECT r.*, u.name AS tutor_name
-    FROM reservations r JOIN users u ON u.id = r.tutor_id
-    WHERE r.parent_id = ${parentId} ORDER BY r.starts_at DESC
-  `;
-  return rows as Array<{
-    id: number;
-    parent_id: number;
-    tutor_id: number;
-    starts_at: string;
-    duration_min: number;
-    note: string;
-    status: string;
-    tutor_name: string;
-  }>;
-}
-
-export async function listReservationsForTutor(tutorId: number) {
-  const sql = getSql();
-  const rows = await sql`
-    SELECT r.*, u.name AS parent_name
-    FROM reservations r JOIN users u ON u.id = r.parent_id
-    WHERE r.tutor_id = ${tutorId} ORDER BY r.starts_at DESC
-  `;
-  return rows as Array<{
-    id: number;
-    parent_id: number;
-    tutor_id: number;
-    starts_at: string;
-    duration_min: number;
-    note: string;
-    status: string;
-    parent_name: string;
-  }>;
+  const rows = await sql`SELECT * FROM matchings WHERE item_id = ${itemId}`;
+  return (rows[0] as Matching) ?? null;
 }

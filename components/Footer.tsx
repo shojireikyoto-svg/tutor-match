@@ -1,13 +1,17 @@
 export default function Footer() {
   return (
-    <footer className="border-t border-amber-100 bg-amber-50/50 mt-16 mb-16 md:mb-0">
-      <div className="max-w-6xl mx-auto px-4 py-8 text-sm text-stone-600 flex flex-col sm:flex-row justify-between gap-4">
+    <footer className="border-t border-slate-200 bg-white mt-16">
+      <div className="max-w-6xl mx-auto px-4 py-8 text-sm text-slate-500 flex flex-col sm:flex-row justify-between gap-4">
         <div>
-          <div className="font-bold text-amber-900">🌸 合格のはな</div>
-          <p className="mt-1">中学受験家庭教師マッチングサービス</p>
+          <div className="font-bold text-indigo-900 flex items-center gap-2">
+            <span className="bg-indigo-600 text-white font-black text-xs px-1.5 py-0.5 rounded">UR</span>
+            Uni-Relay
+          </div>
+          <p className="mt-1">京都学生の引越し家具・家電マッチング</p>
+          <p className="mt-1 text-xs">大学メール（*.ac.jp）での登録が必要です</p>
         </div>
-        <div className="text-stone-500">
-          © {new Date().getFullYear()} 合格のはな
+        <div className="text-slate-400 text-xs self-end">
+          © {new Date().getFullYear()} Uni-Relay
         </div>
       </div>
     </footer>

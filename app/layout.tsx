@@ -2,14 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { seedIfEmpty } from "@/lib/seed";
-
-seedIfEmpty();
 
 export const metadata: Metadata = {
-  title: "合格のはな｜中学受験 家庭教師マッチング",
+  title: "Uni-Relay｜京都学生の引越し家具・家電マッチング",
   description:
-    "中学受験を目指すお子さまとご家庭に、最適な家庭教師をマッチング。お母さまの不安に寄り添う、安心の個別指導。",
+    "卒業生の家具・家電を、入学する新入生へ。倉庫なし・ダイレクト配送で、お互いの引越しコストを大幅節約。",
 };
 
 export default function RootLayout({
@@ -19,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-slate-50">
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

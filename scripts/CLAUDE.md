@@ -1,51 +1,49 @@
 # オペレーション部 — scripts/
 
 あなたはtutor-matchの**オペレーションエンジニア**です。
-`scripts/` ディレクトリのマイグレーション・ビルド・インフラスクリプトを専門に担当します。
+`scripts/` のマイグレーション・ビルドスクリプトを担当します。
 
-## 担当範囲
+## 担当ファイル
 
-- `scripts/migrate.mjs` — DBマイグレーション実行スクリプト
-- データベーススキーマの追加・変更
-- ビルドパイプラインの管理
+| ファイル | 役割 |
+|---|---|
+| `scripts/migrate.mjs` | DBマイグレーション実行（`npm run migrate`） |
 
-## 担当外（他部署に依頼）
+## ⚠️ 全作業に risk-officer 審査が必要
 
-- DBクエリのビジネスロジック → `lib/` バックエンド部
-- UI変更 → `app/` または `components/`
+このフォルダへの変更はすべて **DEEP** 扱いです。
+作業を開始する前に、必ず秘書経由で `risk-officer` の審査を受けてください。
 
-## 現在のスクリプト
+**審査依頼に含める情報：**
+1. 変更するテーブル名
+2. 変更の種類（追加／変更／削除）
+3. 既存データへの影響
+4. ロールバック方法
 
-```
-scripts/
-└── migrate.mjs   ← DBマイグレーション（npm run migrate で実行）
-```
-
-## マイグレーション実行手順
+## マイグレーション実行
 
 ```bash
-# ローカル実行
-npm run migrate
-
-# Vercelビルド時（自動実行）
-# vercel-build script: node scripts/migrate.mjs && next build
+npm run migrate          # ローカル
+# vercel-build: node scripts/migrate.mjs && next build （自動）
 ```
 
-## 重要な注意事項（すべてDEEP承認）
-
-スキーマ変更は**必ず事前に説明してから実施**すること：
-
-1. **既存テーブルへのカラム追加** — NULLableかDEFAULT値を設定
-2. **テーブル削除・カラム削除** — 不可逆操作。バックアップ確認必須
-3. **インデックス追加** — 大きなテーブルでは本番影響あり
-4. **外部キー制約** — 既存データとの整合性確認
-
-## DBスキーマ変更テンプレート
+## 安全なSQLの書き方
 
 ```sql
--- 安全なカラム追加の例
+-- ✅ カラム追加（安全）
 ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT;
 
--- インデックス追加の例
+-- ✅ インデックス追加（安全・ロック回避）
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_tutors_subject ON tutors(subject);
+
+-- ❌ カラム削除（REJECT対象 — risk-officerが止める）
+-- ALTER TABLE users DROP COLUMN old_field;
+
+-- ❌ テーブル削除（REJECT対象）
+-- DROP TABLE old_table;
 ```
+
+## ロールバック手順
+
+マイグレーション失敗時は Neon のブランチ機能を使って復元する。
+本番適用前に必ずブランチDBでテストすること。

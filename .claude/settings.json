@@ -5,7 +5,7 @@
       "Bash(npm run build)",
       "Bash(npm run lint)",
       "Bash(npm run lint -- --fix)",
-      "Bash(npm run migrate)",
+      "Bash(npx tsc --noEmit)",
       "Bash(git status)",
       "Bash(git diff*)",
       "Bash(git log*)",
@@ -15,15 +15,13 @@
       "Bash(git fetch*)",
       "Bash(git pull*)",
       "Bash(node --version)",
-      "Bash(npm --version)",
-      "Bash(npx tsc --noEmit)"
+      "Bash(npm --version)"
     ],
     "deny": [
       "Bash(rm -rf*)",
       "Bash(git push --force*)",
-      "Bash(git reset --hard*)",
-      "Bash(DROP TABLE*)",
-      "Bash(DELETE FROM*)"
+      "Bash(git push -f*)",
+      "Bash(git reset --hard*)"
     ]
   }
 }

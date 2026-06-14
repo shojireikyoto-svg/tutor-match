@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>事業計画書 — 京都プライベートサウナ</title>
+<style>
+  :root { --red: #c0392b; }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP','Yu Gothic',sans-serif;
+    font-size:10pt;
+    line-height:1.75;
+    color:#111;
+    background:#fff;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .page {
+    width:210mm; min-height:297mm;
+    margin:0 auto;
+    padding:18mm 18mm 15mm;
+    page-break-after:always;
+    display:flex; flex-direction:column;
+  }
+  .page:last-child { page-break-after:auto; }
+
+  @media print {
+    body { margin:0; }
+    .page { width:210mm; height:297mm; margin:0; padding:18mm 18mm 15mm; }
+  }
+  @media screen {
+    body { background:#ccc; padding:10mm 0; }
+    .page { box-shadow:0 2px 12px rgba(0,0,0,.2); margin-bottom:6mm; background:#fff; }
+  }
+
+  @media screen and (max-width: 700px) {
+    body { background:#fff; padding:0; }
+    .page {
+      width:100%; min-height:unset;
+      padding:16px 14px 20px;
+      box-shadow:none;
+      margin-bottom:0;
+      border-bottom:6px solid #eee;
+    }
+    .page:last-child { border-bottom:none; }
+    body        { font-size:14px; }
+    .doc-title  { font-size:15px !important; }
+    .doc-meta   { font-size:11px !important; }
+    h2          { font-size:14px !important; }
+    p, li       { font-size:13px !important; }
+    .note       { font-size:11px !important; }
+    .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:4mm; }
+    table       { font-size:12px; min-width:480px; }
+    th, td      { padding:6px 8px; }
+    .kpi-row    { flex-wrap:wrap; }
+    .kpi-item   { flex:1 1 45%; border-bottom:1px solid #bbb; }
+    .kpi-item .n { font-size:22px !important; }
+    .timeline            { grid-template-columns:1fr; }
+    .tl-item             { border-right:none !important; }
+    .tl-item:nth-last-child(-n+2) { border-bottom:1px solid #bbb; }
+    .tl-item:last-child  { border-bottom:none; }
+    .conclusion-body { font-size:13px !important; }
+  }
+
+  .page-header {
+    border-bottom:2px solid #111;
+    padding-bottom:3mm;
+    margin-bottom:6mm;
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    flex-wrap:wrap;
+    gap:4px;
+  }
+  .doc-title { font-size:13pt; font-weight:700; }
+  .doc-meta  { font-size:8pt; color:#555; }
+
+  .conclusion {
+    border:2px solid var(--red);
+    padding:10px 14px;
+    margin-bottom:8mm;
+  }
+  .conclusion-label {
+    font-size:8pt; font-weight:700; color:var(--red);
+    letter-spacing:.1em; margin-bottom:4px;
+  }
+  .conclusion-body { font-size:9.5pt; line-height:1.7; }
+  .conclusion-body strong { color:var(--red); }
+
+  .sec { margin-bottom:5mm; }
+  h2 {
+    font-size:10.5pt; font-weight:700;
+    border-bottom:1px solid #111;
+    padding-bottom:2px; margin-bottom:3mm;
+  }
+  h3 {
+    font-size:10pt; font-weight:700;
+    margin-bottom:2mm; color:#111;
+  }
+  p { font-size:9.5pt; margin-bottom:2mm; color:#222; }
+  ul { padding-left:1.2em; margin-bottom:2mm; }
+  li { font-size:9.5pt; color:#222; margin-bottom:1mm; }
+
+  .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  table { width:100%; border-collapse:collapse; font-size:9pt; margin-bottom:3mm; }
+  th {
+    border:1px solid #888;
+    padding:5px 8px;
+    background:#f0f0f0;
+    font-weight:700; text-align:left;
+    font-size:8.5pt;
+  }
+  td {
+    border:1px solid #bbb;
+    padding:5px 8px;
+    vertical-align:top;
+  }
+  td.r  { text-align:right; }
+  td.b  { font-weight:700; }
+  td.rb { text-align:right; font-weight:700; }
+  td.red { color:var(--red); font-weight:700; text-align:right; }
+
+  .kpi-row {
+    display:flex; gap:0; border:1px solid #bbb; margin-bottom:4mm;
+  }
+  .kpi-item {
+    flex:1; padding:8px 12px; border-right:1px solid #bbb; text-align:center;
+  }
+  .kpi-item:last-child { border-right:none; }
+  .kpi-item .n { font-size:17pt; font-weight:700; color:var(--red); display:block; line-height:1.2; }
+  .kpi-item .l { font-size:8pt; color:#555; }
+
+  .note { font-size:8pt; color:#555; margin-bottom:2mm; }
+
+  .timeline { display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid #bbb; margin-bottom:3mm; }
+  .tl-item { padding:8px 10px; border-bottom:1px solid #bbb; border-right:1px solid #bbb; }
+  .tl-item:nth-child(even) { border-right:none; }
+  .tl-item:nth-last-child(-n+2) { border-bottom:none; }
+  .tl-ph { font-size:8pt; font-weight:700; color:var(--red); margin-bottom:3px; }
+  .tl-task { font-size:8.5pt; color:#222; padding:1px 0; }
+  .tl-task::before { content:"・"; color:#888; }
+
+  .page-footer {
+    margin-top:auto; padding-top:3mm;
+    border-top:1px solid #bbb;
+    display:flex; justify-content:space-between;
+    font-size:8pt; color:#777;
+  }
+
+  hr { border:none; border-top:1px solid #ddd; margin:4mm 0; }
+  .conclusion-box { border:1px solid #bbb; padding:10px 14px; margin-bottom:5mm; font-size:9.5pt; }
+</style>
+</head>
+<body>
+<div style="text-align:right;padding:4px 12px;background:#f0f0f0;font-size:11px;"><a href="index.html" style="color:#2e7d5e;text-decoration:none;">← 一覧に戻る</a></div>
+
+<div class="page">
+  <div class="page-header">
+    <div class="doc-title">事業計画書｜京都プライベートサウナ「古屋温浴」</div>
+    <div class="doc-meta">作成：2026年6月　社外秘</div>
+  </div>
+  <div class="conclusion">
+    <div class="conclusion-label">■ 結論</div>
+    <div class="conclusion-body">
+      京都の町家を改装した完全貸切サウナを開業する。<strong>初期投資 4,500万円（うち地銀借入 4,000万円）</strong>、
+      2年目に黒字転換、5年目に累積損失を解消する見込み。
+      世界的サウナブームと京都インバウンド需要が重なる今がタイミングとして最適であり、
+      「薪サウナ × 京町家 × 英語対応」の組み合わせは国内に競合が存在しない。
+      <strong>推奨：実行する。ただし地銀融資の承認を条件とする。</strong>
+    </div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi-item"><span class="n">4,500万</span><span class="l">初期投資総額</span></div>
+    <div class="kpi-item"><span class="n">2年目</span><span class="l">黒字転換見込み</span></div>
+    <div class="kpi-item"><span class="n">2,400万</span><span class="l">3年目目標売上</span></div>
+    <div class="kpi-item"><span class="n">20年</span><span class="l">借入返済期間</span></div>
+  </div>
+  <div class="sec">
+    <h2>1. 事業概要</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:28%">項目</th><th>内容</th></tr>
+      <tr><td>事業名</td><td>古屋温浴（KOYA ONSEN）</td></tr>
+      <tr><td>事業形態</td><td>完全貸切プライベートサウナ施設の運営</td></tr>
+      <tr><td>所在地（想定）</td><td>京都市東山・岡崎・御所南エリアの築100年前後の京町家</td></tr>
+      <tr><td>ターゲット</td><td>訪日外国人富裕層（主）、国内高所得層・外資系法人（副）</td></tr>
+      <tr><td>主要サービス</td><td>貸切サウナ（90〜120分）、体験オプション（抹茶・瞑想）、法人月次契約</td></tr>
+      <tr><td>基本単価</td><td>30,000〜60,000円 / 1コマ（2〜6名）</td></tr>
+    </table></div>
+  </div>
+  <div class="sec">
+    <h2>2. この事業を選ぶ理由（3点）</h2>
+    <ul>
+      <li><strong>先行者利益：</strong>「薪サウナ × 築100年町家 × 英語完全対応」の組み合わせは現時点で国内に競合なし</li>
+      <li><strong>高単価が正当化される：</strong>外国人富裕層のウェルネス消費は1体験5〜25万円を支払う層が急増中</li>
+      <li><strong>商社キャリアの直接活用：</strong>英語交渉・契約書作成・海外顧客対応・法人営業はすべて既存スキルで対応可能</li>
+    </ul>
+  </div>
+  <div class="page-footer"><span>古屋温浴 — 事業計画書</span><span>1 / 9</span></div>
+</div>
+
+<div class="page">
+  <div class="page-header"><div class="doc-title">事業計画書｜京都プライベートサウナ「古屋温浴」</div><div class="doc-meta">2026年6月　社外秘</div></div>
+  <div class="sec"><h2>3. 市場環境</h2><div class="table-wrap"><table><tr><th style="width:30%">市場動向</th><th>根拠・データ</th></tr><tr><td>サウナブームの世界化</td><td>フィンランドサウナ文化はUNESCO無形文化遺産（2020年）。欧米・中東の富裕層ウェルネス旅行の必須体験に定着</td></tr><tr><td>京都インバウンドの回復・拡大</td><td>訪日外国人数は2024年に過去最高を更新。京都は全国でも高単価消費が集中するエリア</td></tr><tr><td>国内サウナ市場の急成長</td><td>日本サウナ・スパ協会によると、サウナ人口は2019年比で約2倍に増加。施設不足が続く</td></tr><tr><td>体験型消費へのシフト</td><td>「モノより体験」の消費トレンドが加速。特に外国人富裕層は「ここにしかない体験」に最高値を支払う</td></tr></table></div></div>
+  <div class="sec"><h2>4. 施設コンセプト</h2><h3>（1）物件</h3><p>築100年前後の京町家（坪庭付き）を賃借または購入後リノベーション。東山・岡崎・御所南エリアを優先候補とする。</p><h3>（2）設備</h3><div class="table-wrap"><table><tr><th style="width:30%">設備</th><th>仕様</th></tr><tr><td>サウナ室</td><td>フィンランド製薪ストーブ使用、80〜95℃、定員2〜6名</td></tr><tr><td>水風呂</td><td>天然石づくり、16〜18℃維持、かけ流し想定</td></tr><tr><td>外気浴</td><td>坪庭に木製チェア・寝転びスペース配置</td></tr><tr><td>アウフグース</td><td>白樺 × 京都産ヒノキ精油ブレンド（オリジナル）</td></tr></table></div><h3>（3）体験オプション</h3><div class="table-wrap"><table><tr><th style="width:30%">オプション</th><th>内容</th><th style="width:20%">追加単価</th></tr><tr><td>抹茶 × 和菓子</td><td>サウナ後15分。茶道職人との一服体験</td><td class="r">3,000〜5,000円</td></tr><tr><td>瞑想 × 呼吸法</td><td>坪庭での20分ガイドセッション</td><td class="r">3,000〜5,000円</td></tr><tr><td>京都工芸品</td><td>陶芸・染色など職人作品のギフト販売</td><td class="r">5,000円〜</td></tr></table></div></div>
+  <div class="page-footer"><span>古屋温浴 — 事業計画書</span><span>2 / 9</span></div>
+</div>
+
+<div class="page">
+  <div class="page-header"><div class="doc-title">事業計画書｜京都プライベートサウナ「古屋温浴」</div><div class="doc-meta">2026年6月　社外秘</div></div>
+  <div class="sec"><h2>6. 初期投資内訳（総額 4,500万円）</h2><div class="table-wrap"><table><tr><th style="width:38%">項目</th><th>内容</th><th style="width:20%">金額</th></tr><tr><td>物件取得・保証金</td><td>敷金・礼金・仲介料</td><td class="r">200万円</td></tr><tr><td>建築・内装リノベーション</td><td>耐熱・配管・水風呂・坪庭整備・電気工事</td><td class="r">2,500万円</td></tr><tr><td>サウナ設備一式</td><td>フィンランド製薪ストーブ・ロウリュ設備・石材</td><td class="r">600万円</td></tr><tr><td>什器・備品・ユニフォーム</td><td>タオル・チェア・照明・浴衣・消耗品初期在庫</td><td class="r">200万円</td></tr><tr><td>Web・予約・決済システム</td><td>多言語サイト・オンライン予約・クレジット対応</td><td class="r">150万円</td></tr><tr><td>開業前プロモーション</td><td>SNS広告・メディア招待・プレス向け試験開業</td><td class="r">150万円</td></tr><tr><td>運転資金（6ヶ月分）</td><td>家賃・光熱費・人件費・返済のバッファ</td><td class="r">700万円</td></tr><tr><td class="b">合計</td><td></td><td class="red">4,500万円</td></tr></table></div></div>
+  <div class="sec"><h2>7. 融資戦略</h2><div class="table-wrap"><table><tr><th style="width:25%">資金調達元</th><th>金額</th><th>条件（想定）</th></tr><tr><td><strong>地銀メイン融資</strong></td><td class="rb">4,000万円</td><td>返済期間20年・金利1.8〜2.5%・月次返済約20〜22万円</td></tr><tr><td>自己資金</td><td class="rb">500万円</td><td>退職金・貯蓄から充当</td></tr></table></div></div>
+  <div class="sec"><h2>8. 収益計画（3ヶ年）</h2><div class="table-wrap"><table><tr><th style="width:36%">項目</th><th>1年目</th><th>2年目</th><th>3年目</th></tr><tr><td>稼働率</td><td class="r">40%</td><td class="r">60%</td><td class="r">75%</td></tr><tr><td class="b">売上合計</td><td class="rb">976万円</td><td class="rb">1,744万円</td><td class="red">2,403万円</td></tr><tr><td>経費合計</td><td class="r">1,300万円</td><td class="r">1,500万円</td><td class="r">1,600万円</td></tr><tr><td class="b">営業損益</td><td class="red">▲ 324万円</td><td class="rb">＋ 244万円</td><td class="red">＋ 803万円</td></tr></table></div></div>
+  <div class="page-footer"><span>古屋温浴 — 事業計画書</span><span>3 / 9</span></div>
+</div>
+
+<div class="page">
+  <div class="page-header"><div class="doc-title">事業計画書｜京都プライベートサウナ「古屋温浴」</div><div class="doc-meta">2026年6月　社外秘</div></div>
+  <div class="sec"><h2>9. 実行ロードマップ（24ヶ月）</h2><div class="timeline"><div class="tl-item"><div class="tl-ph">Phase 1（1〜6ヶ月）準備・融資打診</div><div class="tl-task">物件調査・現地視察</div><div class="tl-task">地銀3行以上に融資打診</div><div class="tl-task">建築士・設計事務所選定</div></div><div class="tl-item"><div class="tl-ph">Phase 2（7〜12ヶ月）設計・融資実行</div><div class="tl-task">物件契約・地銀融資実行</div><div class="tl-task">リノベーション着工</div><div class="tl-task">融資確定後に退職・独立</div></div><div class="tl-item"><div class="tl-ph">Phase 3（13〜18ヶ月）開業</div><div class="tl-task">施設完成・内覧会</div><div class="tl-task">プレオープン（50組限定）</div><div class="tl-task">Airbnb・一休.com掲載</div></div><div class="tl-item"><div class="tl-ph">Phase 4（19〜24ヶ月）成長</div><div class="tl-task">法人月次契約3社以上</div><div class="tl-task">稼働率60%・黒字転換</div><div class="tl-task">2号店計画の検討</div></div></div></div>
+  <div class="sec"><h2>10. リスクと対策</h2><div class="table-wrap"><table><tr><th style="width:32%">リスク</th><th style="width:12%">重要度</th><th>対策</th></tr><tr><td>地銀融資が通らない</td><td style="color:var(--red);font-weight:700;text-align:center">高</td><td>3行同時打診。日本政策金融公庫も並行申請</td></tr><tr><td>工事費の大幅超過</td><td style="color:var(--red);font-weight:700;text-align:center">高</td><td>見積段階で20%バッファを計上。固定費型契約で締結</td></tr><tr><td>インバウンド急減</td><td style="font-weight:700;text-align:center">中</td><td>国内富裕層をセカンドターゲットとして確保</td></tr></table></div></div>
+  <div class="page-footer"><span>古屋温浴 — 事業計画書</span><span>4 / 9</span></div>
+</div>
+
+<div class="page">
+  <div class="page-header"><div class="doc-title">事業計画書｜古屋温浴 — 物件取得</div><div class="doc-meta">2026年6月　社外秘</div></div>
+  <div class="conclusion"><div class="conclusion-label">■ 結論</div><div class="conclusion-body">まず賃借から入り、事業が安定した段階で購入を検討するのが現実的。<strong>旅館業法の許可・用途変更・耐震改修の3点</strong>が盲点になりやすく、着手前に建築士・行政書士・保健所への事前相談が必須。</div></div>
+  <div class="sec"><h2>12. 賃借 vs 購入</h2><div class="table-wrap"><table><tr><th>方式</th><th>メリット</th><th>注意点</th></tr><tr><td><strong>賃借（推奨）</strong></td><td>初期資金を抑えられる。撤退リスク小</td><td>大規模改修の可否・原状回復を契約前に書面確認必須</td></tr><tr><td>購入</td><td>改修自由度高い。長期的に有利</td><td>取得費3,000〜8,000万円超。事業検証前の購入はリスク大</td></tr></table></div></div>
+  <div class="sec"><h2>13. 立地選定基準</h2><div class="table-wrap"><table><tr><th style="width:28%">チェック項目</th><th>確認内容</th><th style="width:16%">重要度</th></tr><tr><td>用途地域</td><td>商業・近隣商業・準商業地域であること。住居専用地域では許可が下りない</td><td style="color:var(--red);font-weight:700">必須</td></tr><tr><td>アクセス</td><td>主要ホテルからタクシー15分以内</td><td style="font-weight:700">高</td></tr><tr><td>近隣環境</td><td>薪煙突の排煙・騒音について近隣の理解が得られるか</td><td style="color:var(--red);font-weight:700">必須</td></tr><tr><td>水道・電気容量</td><td>サウナストーブ・冷却設備で大容量が必要。増設費用を見積もること</td><td style="color:var(--red);font-weight:700">必須</td></tr></table></div></div>
+  <div class="sec"><h2>14. 法規制・許認可</h2><div class="table-wrap"><table><tr><th style="width:28%">規制・許可</th><th>内容・注意点</th></tr><tr><td><strong>公衆浴場法 / 旅館業法</strong></td><td>完全貸切・会員制なら旅館業法「簡易宿所」扱いの可能性あり。保健所への事前確認必須</td></tr><tr><td><strong>建築基準法（用途変更）</strong></td><td>住居→商業用途への用途変更申請が必要。旧耐震は耐震改修も求められる場合あり</td></tr><tr><td><strong>消防法</strong></td><td>薪ストーブは「特殊火気設備」として消防署への届け出が必要</td></tr><tr><td><strong>京都市景観条例</strong></td><td>外観変更に景観審査が必要。申請から許可まで2〜3ヶ月</td></tr></table></div></div>
+  <div class="page-footer"><span>古屋温浴 — 事業計画書</span><span>5 / 9</span></div>
+</div>
+
+<div class="page">
+  <div class="page-header"><div class="doc-title">事業計画書｜古屋温浴 — 月次CF・損益</div><div class="doc-meta">2026年6月　社外秘</div></div>
+  <div class="conclusion"><div class="conclusion-label">■ 結論</div><div class="conclusion-body">開業後12ヶ月間は赤字が続くが、<strong>手元の運転資金700万円で吸収できる範囲</strong>。14ヶ月目に月次黒字転換。<strong>法人月次契約を開業前に1社以上確保することが最重要アクション。</strong></div></div>
+  <div class="sec"><h2>16. 開業後24ヶ月 月次キャッシュフロー</h2><div class="table-wrap"><table><tr><th>月</th><th>稼働率</th><th>月次売上</th><th>月次経費</th><th>月次損益</th><th>累積（残高）</th></tr><tr><td>1</td><td class="r">20%</td><td class="r">44万</td><td class="r">108万</td><td class="r" style="color:var(--red)">▲64万</td><td class="r">▲64万　残636万</td></tr><tr><td>3</td><td class="r">30%</td><td class="r">73万</td><td class="r">108万</td><td class="r" style="color:var(--red)">▲35万</td><td class="r">▲152万　残548万</td></tr><tr><td>6</td><td class="r">45%</td><td class="r">100万</td><td class="r">108万</td><td class="r" style="color:var(--red)">▲8万</td><td class="r">▲204万　残496万</td></tr><tr><td>7</td><td class="r">50%</td><td class="r">115万</td><td class="r">108万</td><td class="r">＋7万</td><td class="r">▲197万　残503万</td></tr><tr><td>12</td><td class="r">65%</td><td class="r">162万</td><td class="r">125万</td><td class="r">＋37万</td><td class="r">▲55万　残645万</td></tr><tr><td>13〜18</td><td class="r">65〜70%</td><td class="r">各162〜185万</td><td class="r">各125〜133万</td><td class="r">各37〜52万</td><td class="r" style="font-weight:700">累積黒字転換</td></tr></table></div></div>
+  <div class="sec"><h2>17. ストレステスト</h2><div class="table-wrap"><table><tr><th style="width:30%">前提条件</th><th>結果</th></tr><tr><td>稼働率が計画の半分（最大20%止まり）</td><td>月次赤字が6〜7万増加。運転資金は約18ヶ月で枯渇</td></tr><tr><td>開業から3ヶ月間、売上ゼロ</td><td>運転資金700万→376万。法人契約1社（月20万）があれば回避可能</td></tr><tr><td>工事費が500万円超過</td><td>追加借入500万が必要。黒字転換が2〜3ヶ月遅れる</td></tr></table></div></div>
+  <div class="page-footer"><span>古屋温浴 — 事業計画書</span><span>6 / 9</span></div>
+</div>
+
+<div class="page">
+  <div class="page-header"><div class="doc-title">事業計画書｜古屋温浴 — 運営・人員計画</div><div class="doc-meta">2026年6月　社外秘</div></div>
+  <div class="sec"><h2>18. 人員計画</h2><div class="table-wrap"><table><tr><th>フェーズ</th><th>体制</th><th>人件費（月）</th><th>備考</th></tr><tr><td>開業〜6ヶ月</td><td>オーナー＋英語対応アルバイト1名</td><td class="r">15〜20万円</td><td>オーナーは接客・清掃・予約管理を兼務</td></tr><tr><td>7〜18ヶ月</td><td>オーナー＋アルバイト2名</td><td class="r">25〜35万円</td><td>オーナーは法人営業に注力</td></tr><tr><td>19ヶ月〜</td><td>オーナー＋マネージャー1名＋アルバイト1名</td><td class="r">40〜50万円</td><td>オーナーは2号店計画へ</td></tr></table></div></div>
+  <div class="sec"><h2>19. 1日の運営スケジュール</h2><div class="table-wrap"><table><tr><th>時間帯</th><th>内容</th><th>担当</th></tr><tr><td>9:00〜10:30</td><td>清掃・薪補充・水風呂水温確認</td><td>オーナー or アルバイト</td></tr><tr><td>11:00〜13:00</td><td>第1コマ（貸切120分）</td><td>オーナー（英語接客）</td></tr><tr><td>15:00〜17:00</td><td>第2コマ（貸切120分）</td><td>オーナー or アルバイト</td></tr><tr><td>17:00〜19:00</td><td>第3コマ（週末・繁忙期のみ）</td><td>アルバイト</td></tr><tr><td>19:00〜20:00</td><td>最終清掃・翌日予約確認・SNS投稿</td><td>オーナー</td></tr></table></div></div>
+  <div class="page-footer"><span>古屋温浴 — 事業計画書</span><span>7 / 9</span></div>
+</div>
+
+<div class="page">
+  <div class="page-header"><div class="doc-title">古屋温浴 — 海外向けマーケティング戦略</div><div class="doc-meta">2026年6月　社外秘</div></div>
+  <div class="sec"><h2>22. 結論：売るのは「サウナ」ではなく「文脈」</h2><div class="conclusion-box"><strong>核心メッセージ：</strong>競合は他のサウナではなく<strong>京都の高級料亭（2〜5万円/人）</strong>。<em>Authenticity × Exclusivity</em> で訴求する。</div></div>
+  <div class="sec"><h2>23. 訴求軸（3本柱）</h2><div class="table-wrap"><table><tr><th style="width:30%">訴求軸</th><th>メッセージ</th><th style="width:35%">コピー例（英語）</th></tr><tr><td><strong>① Authentic Japan</strong></td><td>ガイドブックに載っていない体験</td><td><em>"The sauna your guidebook doesn't know about."</em></td></tr><tr><td><strong>② Wabi-Sabi Wellness</strong></td><td>「ととのう」を希少性として描写</td><td><em>"Finnish heat. Japanese silence."</em></td></tr><tr><td><strong>③ Exclusivity</strong></td><td>1日3コマ・完全予約制</td><td><em>"Yours alone. Two hours. No strangers."</em></td></tr></table></div></div>
+  <div class="sec"><h2>24. チャネル別戦略</h2><div class="table-wrap"><table><tr><th>チャネル</th><th>アプローチ</th><th>目標KPI</th></tr><tr><td><strong>高級ホテルコンシェルジュ</strong></td><td>直営業。紹介料15〜20%で提携</td><td>3ホテルと提携</td></tr><tr><td><strong>Airbnb Experiences</strong></td><td>"Private Machiya Sauna — 100-Year-Old Kyoto Townhouse"</td><td>評価4.9以上</td></tr><tr><td><strong>Instagram（英語）</strong></td><td>薪・水風呂・坪庭の映像美。毎日1投稿</td><td>フォロワー5,000</td></tr><tr><td><strong>Condé Nast / Monocle</strong></td><td>開業時にプレス向け無料体験提供</td><td>開業3ヶ月以内に1媒体</td></tr></table></div></div>
+  <div class="page-footer"><span>古屋温浴 — 事業計画書</span><span>8 / 9</span></div>
+</div>
+
+<div class="page">
+  <div class="page-header"><div class="doc-title">古屋温浴 — 競合分析・出口戦略・起業準備</div><div class="doc-meta">2026年6月　社外秘</div></div>
+  <div class="sec"><h2>27. 競合分析</h2><div class="table-wrap"><table><tr><th>競合カテゴリ</th><th>価格帯</th><th>弱点（古屋温浴の優位点）</th></tr><tr><td>銭湯併設サウナ</td><td>500〜1,000円/人</td><td>混浴・外国語対応なし</td></tr><tr><td>スパ系ホテル</td><td>5,000〜15,000円/人</td><td>本物感・独立感がない</td></tr><tr><td>貸切サウナ新興</td><td>3,000〜8,000円/組</td><td>新築ビル・ストーリーがない</td></tr><tr><td><strong>古屋温浴（自社）</strong></td><td><span style="color:var(--red);font-weight:700">15,000〜25,000円/組</span></td><td><strong>築100年町家・完全貸切・英語対応</strong></td></tr></table></div></div>
+  <div class="sec"><h2>28. 5年後ビジョンと出口戦略</h2><div class="table-wrap"><table><tr><th>シナリオ</th><th>概要</th><th>評価額</th></tr><tr><td><strong>A. 多店舗展開</strong></td><td>5年後に京都2号店・金沢など</td><td>3,000〜5,000万</td></tr><tr><td><strong>B. ホテルへの売却</strong></td><td>外資系ラグジュアリーホテルが買収</td><td>4,000〜8,000万</td></tr><tr><td><strong>C. ライセンスモデル</strong></td><td>ブランドを他地域オーナーに使用許諾</td><td>月50〜100万/件</td></tr></table></div></div>
+  <div class="sec"><h2>29. 起業準備チェックリスト（12ヶ月）</h2><div class="table-wrap"><table><tr><th>時期</th><th>アクション</th><th>備考</th></tr><tr><td><strong>今〜3ヶ月後</strong></td><td>物件候補リストアップ、地銀へ事前相談</td><td>融資審査は最低3ヶ月</td></tr><tr><td><strong>3〜6ヶ月後</strong></td><td>合同会社設立、物件本契約、改修設計開始</td><td>法人設立は6万円・1週間</td></tr><tr><td><strong>6〜9ヶ月後</strong></td><td>旅館業法許可申請、工事着工、SNS開設</td><td>許可まで2〜3ヶ月</td></tr><tr><td><strong>9〜12ヶ月後</strong></td><td>退職・保険切替、スタッフ採用、プレオープン</td><td>退職は6ヶ月前予告が理想</td></tr><tr><td><strong>12ヶ月後</strong></td><td><strong>グランドオープン</strong></td><td>—</td></tr></table></div></div>
+  <div class="page-footer"><span>古屋温浴 — 事業計画書</span><span>9 / 9</span></div>
+</div>
+
+</body>
+</html>

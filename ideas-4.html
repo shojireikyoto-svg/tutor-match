@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>起業候補4事業 詳細レポート</title>
+<style>
+  :root { --green: #2e7d5e; }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP','Yu Gothic',sans-serif;
+    font-size:10pt;
+    line-height:1.75;
+    color:#111;
+    background:#fff;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .page {
+    width:210mm; min-height:297mm;
+    margin:0 auto;
+    padding:18mm 18mm 15mm;
+    page-break-after:always;
+    display:flex; flex-direction:column;
+  }
+  .page:last-child { page-break-after:auto; }
+
+  @media print {
+    body { margin:0; }
+    .page { width:210mm; height:297mm; margin:0; padding:18mm 18mm 15mm; }
+  }
+  @media screen {
+    body { background:#ccc; padding:10mm 0; }
+    .page { box-shadow:0 2px 12px rgba(0,0,0,.2); margin-bottom:6mm; background:#fff; }
+  }
+
+  @media screen and (max-width: 700px) {
+    body { background:#fff; padding:0; font-size:14px; }
+    .page {
+      width:100%; min-height:unset;
+      padding:16px 14px 20px;
+      box-shadow:none; margin-bottom:0;
+      border-bottom:6px solid #eee;
+    }
+    .page:last-child { border-bottom:none; }
+    .doc-title  { font-size:15px !important; }
+    .doc-meta   { font-size:11px !important; }
+    h2          { font-size:14px !important; }
+    h3          { font-size:13px !important; }
+    p, li       { font-size:13px !important; }
+    .note       { font-size:11px !important; }
+    .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:4mm; }
+    table       { font-size:12px; min-width:480px; }
+    th, td      { padding:6px 8px; }
+    .kpi-row    { flex-wrap:wrap; }
+    .kpi-item   { flex:1 1 45%; border-bottom:1px solid #bbb; }
+    .kpi-item .n { font-size:20px !important; }
+    .rank-grid  { grid-template-columns:1fr 1fr !important; }
+    .conclusion-body { font-size:13px !important; }
+  }
+
+  .page-header {
+    border-bottom:2px solid #111;
+    padding-bottom:3mm; margin-bottom:6mm;
+    display:flex; justify-content:space-between;
+    align-items:baseline; flex-wrap:wrap; gap:4px;
+  }
+  .doc-title { font-size:13pt; font-weight:700; }
+  .doc-meta  { font-size:8pt; color:#555; }
+
+  .conclusion {
+    border:2px solid var(--green);
+    padding:10px 14px; margin-bottom:6mm;
+  }
+  .conclusion-label {
+    font-size:8pt; font-weight:700; color:var(--green);
+    letter-spacing:.1em; margin-bottom:4px;
+  }
+  .conclusion-body { font-size:9.5pt; line-height:1.7; }
+  .conclusion-body strong { color:var(--green); }
+
+  .biz-header {
+    background:var(--green); color:#fff;
+    padding:6px 12px; font-size:11pt; font-weight:700;
+    margin-bottom:4mm;
+  }
+
+  .sec { margin-bottom:5mm; }
+  h2 {
+    font-size:10.5pt; font-weight:700;
+    border-bottom:1px solid #111;
+    padding-bottom:2px; margin-bottom:3mm;
+  }
+  h3 { font-size:10pt; font-weight:700; margin-bottom:2mm; color:var(--green); }
+  p  { font-size:9.5pt; margin-bottom:2mm; color:#222; }
+  ul { padding-left:1.2em; margin-bottom:2mm; }
+  li { font-size:9.5pt; color:#222; margin-bottom:1mm; }
+
+  .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  table { width:100%; border-collapse:collapse; font-size:9pt; margin-bottom:3mm; }
+  th {
+    border:1px solid #888; padding:5px 8px;
+    background:#f0f0f0; font-weight:700; text-align:left; font-size:8.5pt;
+  }
+  td { border:1px solid #bbb; padding:5px 8px; vertical-align:top; }
+  td.r   { text-align:right; }
+  td.b   { font-weight:700; }
+  td.rb  { text-align:right; font-weight:700; }
+  td.grn { color:var(--green); font-weight:700; }
+
+  .kpi-row { display:flex; gap:0; border:1px solid #bbb; margin-bottom:4mm; }
+  .kpi-item { flex:1; padding:8px 12px; border-right:1px solid #bbb; text-align:center; }
+  .kpi-item:last-child { border-right:none; }
+  .kpi-item .n { font-size:15pt; font-weight:700; color:var(--green); display:block; line-height:1.2; }
+  .kpi-item .l { font-size:8pt; color:#555; }
+
+  .note { font-size:8pt; color:#555; margin-bottom:2mm; }
+
+  .rank-grid {
+    display:grid; grid-template-columns:1fr 1fr 1fr 1fr;
+    gap:0; border:1px solid #bbb; margin-bottom:4mm;
+  }
+  .rank-item { padding:10px 12px; border-right:1px solid #bbb; text-align:center; }
+  .rank-item:last-child { border-right:none; }
+  .rank-num  { font-size:18pt; font-weight:700; color:var(--green); display:block; line-height:1.1; }
+  .rank-name { font-size:8.5pt; font-weight:700; margin:3px 0; }
+  .rank-sub  { font-size:7.5pt; color:#555; }
+
+  .page-footer {
+    margin-top:auto; padding-top:3mm;
+    border-top:1px solid #bbb;
+    display:flex; justify-content:space-between;
+    font-size:8pt; color:#777;
+  }
+
+  hr { border:none; border-top:1px solid #ddd; margin:4mm 0; }
+</style>
+</head>
+<body>
+
+<!-- ======== P1: 結論・比較サマリー ======== -->
+<div class="page">
+  <div class="page-header">
+    <div class="doc-title">起業候補4事業 詳細レポート</div>
+    <div class="doc-meta">作成：2026年6月　社外秘</div>
+  </div>
+
+  <div class="conclusion">
+    <div class="conclusion-label">■ 結論</div>
+    <div class="conclusion-body">
+      4事業はいずれも初期投資10万円以下。<strong>最優先は「AI業務自動化コンサル」</strong>——需要が爆発的に伸びており、今月から副業として開始できる。
+      「デジタルノマド移住サポート」は英語力が参入障壁となり競合がほぼ存在しない高収益ニッチ。
+      「成人ADHDコーチ」は日本の潜在市場が最大だが、資格と信頼構築に3〜6ヶ月を要する。
+      「ポッドキャスト制作代行」は機材投資5〜10万円で即開業でき、法人契約で安定収益を見込める。
+      <strong>推奨：AI自動化コンサルを今月開始し、並行してデジタルノマドサポートの英語マーケティングを準備する。</strong>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>4事業 比較サマリー</h2>
+    <div class="rank-grid">
+      <div class="rank-item">
+        <span class="rank-num">1st</span>
+        <div class="rank-name">AI業務<br>自動化コンサル</div>
+        <div class="rank-sub">即日開始・最速収益化</div>
+      </div>
+      <div class="rank-item">
+        <span class="rank-num">2nd</span>
+        <div class="rank-name">デジタルノマド<br>移住サポート</div>
+        <div class="rank-sub">英語力が参入障壁</div>
+      </div>
+      <div class="rank-item">
+        <span class="rank-num">3rd</span>
+        <div class="rank-name">ポッドキャスト<br>制作代行</div>
+        <div class="rank-sub">法人契約で安定収益</div>
+      </div>
+      <div class="rank-item">
+        <span class="rank-num">4th</span>
+        <div class="rank-name">成人ADHD<br>コーチ</div>
+        <div class="rank-sub">市場最大・準備期間あり</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>数値比較</h2>
+    <div class="table-wrap"><table>
+      <tr>
+        <th style="width:22%">評価軸</th>
+        <th>AI自動化コンサル</th>
+        <th>ノマド移住サポート</th>
+        <th>ADHDコーチ</th>
+        <th>ポッドキャスト制作</th>
+      </tr>
+      <tr><td class="b">初期投資</td><td class="grn">ほぼ0円</td><td class="grn">ほぼ0円</td><td>5〜10万円（資格）</td><td>5〜10万円（機材）</td></tr>
+      <tr><td class="b">収益化期間</td><td class="grn">1〜4週間</td><td>1〜3ヶ月</td><td>3〜6ヶ月</td><td class="grn">2〜6週間</td></tr>
+      <tr><td class="b">月収ポテンシャル</td><td>30〜150万円</td><td class="grn">50〜200万円</td><td>30〜100万円</td><td>20〜80万円</td></tr>
+      <tr><td class="b">競合（日本）</td><td>少ない・急増中</td><td class="grn">ほぼゼロ</td><td class="grn">ほぼゼロ</td><td>少ない</td></tr>
+      <tr><td class="b">商社マン適性</td><td class="grn">◎ 業界知識×AI</td><td class="grn">◎ 英語×交渉</td><td>○ 傾聴力</td><td>○ コンテンツ理解</td></tr>
+      <tr><td class="b">副業スタート</td><td class="grn">可（今月から）</td><td class="grn">可</td><td>可（資格と並行）</td><td class="grn">可</td></tr>
+      <tr><td class="b">スケール方法</td><td>外注→エージェンシー</td><td>サービス型→情報商材</td><td>グループ→動画講座</td><td>外注編集→チーム化</td></tr>
+    </table></div>
+  </div>
+
+  <div class="page-footer">
+    <span>起業候補4事業 詳細レポート</span>
+    <span>1 / 6</span>
+  </div>
+</div>
+
+<!-- ======== P2: AI業務自動化コンサル ======== -->
+<div class="page">
+  <div class="page-header">
+    <div class="doc-title">起業候補4事業 詳細レポート</div>
+    <div class="doc-meta">作成：2026年6月　社外秘</div>
+  </div>
+
+  <div class="biz-header">① AI業務自動化コンサル（中小企業向け）— 事業詳細</div>
+
+  <div class="kpi-row">
+    <div class="kpi-item"><span class="n">ほぼ0円</span><span class="l">初期投資</span></div>
+    <div class="kpi-item"><span class="n">1〜4週間</span><span class="l">収益化までの期間</span></div>
+    <div class="kpi-item"><span class="n">10〜50万</span><span class="l">1社あたり月額</span></div>
+    <div class="kpi-item"><span class="n">3〜5社</span><span class="l">目標クライアント数</span></div>
+  </div>
+
+  <div class="sec">
+    <h2>1. 事業概要</h2>
+    <p>ChatGPT・Claude・Notion AI・Zapier・Make（旧Integromat）などのノーコードAIツールを組み合わせ、
+    中小企業・個人事業主の業務を自動化・効率化するコンサルティングサービス。
+    米国では「AI Automation Consultant」「No-Code Consultant」として独立した職業として確立。
+    日本では大企業向けのDXコンサルは存在するが、中小企業向けに手頃な価格で実装まで行う専門家はほぼいない。</p>
+  </div>
+
+  <div class="sec">
+    <h2>2. 自動化できる業務例（提案ネタ）</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:30%">業務カテゴリ</th><th>具体的な自動化内容</th><th style="width:22%">使用ツール例</th></tr>
+      <tr><td>問い合わせ対応</td><td>メール・LINE・Webフォームへの自動返信・仕分け・担当者振り分け</td><td>ChatGPT + Zapier</td></tr>
+      <tr><td>議事録・報告書作成</td><td>録音データから自動で議事録・要約・タスクリストを生成</td><td>Whisper + Claude</td></tr>
+      <tr><td>SNS・ブログ運用</td><td>社内情報をもとに週次で投稿文を自動生成・スケジュール投稿</td><td>Claude + Buffer</td></tr>
+      <tr><td>在庫・発注管理</td><td>スプレッドシートと連動した自動発注アラート・在庫レポート</td><td>Notion + Make</td></tr>
+      <tr><td>採用・面接対応</td><td>応募者スクリーニング・面接日程調整の自動化</td><td>GPT + Calendly</td></tr>
+      <tr><td>経費・請求書処理</td><td>領収書の自動読み取り・会計ソフトへの自動入力</td><td>Claude + freee API</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>3. 収益モデル</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:30%">サービス</th><th>内容</th><th style="width:22%">単価目安</th></tr>
+      <tr><td>スポット導入支援</td><td>1業務の自動化設計〜実装〜テストまで完結</td><td>10〜30万円/件</td></tr>
+      <tr><td>月次顧問プラン</td><td>継続的な改善・新規自動化・ツール管理</td><td>5〜15万円/月</td></tr>
+      <tr><td>研修・ワークショップ</td><td>社内向けAIツール活用研修（半日〜1日）</td><td>15〜30万円/回</td></tr>
+      <tr><td>英語対応プラン</td><td>在日外資系企業・外国人オーナー向け</td><td>20〜50万円/月</td></tr>
+    </table></div>
+    <p><strong>目標：</strong>顧問3社（月10万円）＋スポット月2件（月20万円）＝月50万円（3ヶ月以内）</p>
+  </div>
+
+  <div class="sec">
+    <h2>4. 今月から始める準備（コスト0）</h2>
+    <ul>
+      <li>ChatGPT Plus（月3,000円）・Claude Pro（月3,000円）・Zapier無料プランに登録</li>
+      <li>自分の会社の業務を1つ自動化してみる → それがそのままケーススタディになる</li>
+      <li>LinkedInに「AI業務効率化の相談受付中」と投稿。知人の中小企業経営者に声かけ</li>
+      <li>最初の1社は無料or3万円で導入。成果事例（削減時間・コスト）を数値化して営業資料にする</li>
+    </ul>
+  </div>
+
+  <div class="sec">
+    <h2>5. リスクと対策</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:35%">リスク</th><th>対策</th></tr>
+      <tr><td>「自分でできる」と思われる</td><td>「できる」と「やる」は別。時間単価で外注メリットを提示する</td></tr>
+      <tr><td>AIツールの急速な変化</td><td>週1時間の情報収集を習慣化。変化の速さ自体を「顧問が必要な理由」として訴求</td></tr>
+      <tr><td>セキュリティ懸念（社内データをAIに入れたくない）</td><td>ローカル処理・匿名化・社内LLM導入の選択肢も提案できるように準備</td></tr>
+    </table></div>
+  </div>
+
+  <div class="page-footer">
+    <span>起業候補4事業 詳細レポート</span>
+    <span>2 / 6</span>
+  </div>
+</div>
+
+<!-- ======== P3: デジタルノマド移住サポート ======== -->
+<div class="page">
+  <div class="page-header">
+    <div class="doc-title">起業候補4事業 詳細レポート</div>
+    <div class="doc-meta">作成：2026年6月　社外秘</div>
+  </div>
+
+  <div class="biz-header">② デジタルノマド移住サポート — 事業詳細</div>
+
+  <div class="kpi-row">
+    <div class="kpi-item"><span class="n">ほぼ0円</span><span class="l">初期投資</span></div>
+    <div class="kpi-item"><span class="n">1〜3ヶ月</span><span class="l">収益化までの期間</span></div>
+    <div class="kpi-item"><span class="n">10〜50万</span><span class="l">1件あたり単価</span></div>
+    <div class="kpi-item"><span class="n">月5〜15件</span><span class="l">スケール時の目標</span></div>
+  </div>
+
+  <div class="sec">
+    <h2>6. 事業概要と市場背景</h2>
+    <p>2024年3月、日本政府がデジタルノマドビザ（特定活動告示）を解禁。
+    外国人が最長6ヶ月、日本でリモートワークしながら滞在できるようになった。
+    英語圏・欧米のデジタルノマドコミュニティでは「Japan」への関心が急騰しているが、
+    住居・銀行口座・SIM・税務・ビザ手続きを一括でサポートするサービスが国内にほぼ存在しない。
+    英語で日本の制度を説明・代行できる人材が決定的に不足している。</p>
+  </div>
+
+  <div class="sec">
+    <h2>7. サービス内容と収益モデル</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:30%">サービス</th><th>内容</th><th style="width:22%">単価目安</th></tr>
+      <tr><td>ビザ申請サポート</td><td>デジタルノマドビザの要件確認・書類準備・申請手続き代行</td><td>3〜8万円/件</td></tr>
+      <tr><td>移住スターターパック</td><td>住居手配・SIM・銀行口座・国民健康保険・住民票の一括サポート</td><td>10〜20万円/件</td></tr>
+      <tr><td>フルリロケーション</td><td>上記全て＋税務相談・英語対応医療機関紹介・コワーキング案内</td><td>30〜50万円/件</td></tr>
+      <tr><td>法人向け（外資企業の社員移住）</td><td>外資系企業が日本に社員を派遣する際の一括サポート</td><td>50〜150万円/件</td></tr>
+      <tr><td>月次コンシェルジュ</td><td>滞在中の各種サポート（役所対応・トラブル解決）月額制</td><td>3〜8万円/月</td></tr>
+    </table></div>
+    <p><strong>目標：</strong>スターターパック月5件 × 15万円 ＝ 月75万円（6ヶ月以内）</p>
+  </div>
+
+  <div class="sec">
+    <h2>8. 集客チャネル</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:30%">チャネル</th><th>具体的な方法</th></tr>
+      <tr><td>Reddit（r/digitalnomad）</td><td>「Japan AMA（何でも聞いて）」を投稿。回答を通じて信頼を構築し、有料サービスへ誘導</td></tr>
+      <tr><td>Nomad List / Levels.fyi</td><td>「Japan Relocation Expert」としてプロフィール登録</td></tr>
+      <tr><td>Facebook Groups</td><td>「Digital Nomads Japan」「Expats in Japan」グループで存在感を出す</td></tr>
+      <tr><td>YouTube（英語）</td><td>「How to get Japan Digital Nomad Visa 2026」の解説動画。再生数が集客に直結</td></tr>
+      <tr><td>LinkedIn（英語）</td><td>外資系企業のHRマネージャーに直接アプローチ。法人案件を狙う</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>9. 商社マンが有利な理由</h2>
+    <ul>
+      <li>英語での交渉・書類作成・説明が当然にできる（最大の参入障壁を既にクリア）</li>
+      <li>商社での外国人同僚・取引先との付き合いが信頼感の源泉になる</li>
+      <li>日本の役所・法制度の仕組みを理解している（外国人には最も難しいパート）</li>
+      <li>法人営業経験から外資系企業のHR部門への営業ができる</li>
+    </ul>
+  </div>
+
+  <div class="sec">
+    <h2>10. リスクと対策</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:35%">リスク</th><th>対策</th></tr>
+      <tr><td>ビザ制度の変更</td><td>ビザに依存しない「移住後サポート」「法人向け」の比率を高める</td></tr>
+      <tr><td>行政書士資格が必要な業務</td><td>ビザ申請の「代理」は行政書士資格が必要。「サポート・情報提供」の位置づけで提供し、正式申請は提携行政書士に紹介する形を取る</td></tr>
+      <tr><td>クライアントの期待値管理</td><td>「できること・できないこと」を契約書に明記。特に銀行口座は開設を保証しない旨を事前説明</td></tr>
+    </table></div>
+  </div>
+
+  <div class="page-footer">
+    <span>起業候補4事業 詳細レポート</span>
+    <span>3 / 6</span>
+  </div>
+</div>
+
+<!-- ======== P4: 成人ADHDコーチ ======== -->
+<div class="page">
+  <div class="page-header">
+    <div class="doc-title">起業候補4事業 詳細レポート</div>
+    <div class="doc-meta">作成：2026年6月　社外秘</div>
+  </div>
+
+  <div class="biz-header">③ 成人ADHD専門コーチ — 事業詳細</div>
+
+  <div class="kpi-row">
+    <div class="kpi-item"><span class="n">5〜10万</span><span class="l">初期投資（資格）</span></div>
+    <div class="kpi-item"><span class="n">3〜6ヶ月</span><span class="l">収益化までの期間</span></div>
+    <div class="kpi-item"><span class="n">3〜10万</span><span class="l">月額/クライアント</span></div>
+    <div class="kpi-item"><span class="n">10〜20名</span><span class="l">スケール時の目標</span></div>
+  </div>
+
+  <div class="sec">
+    <h2>11. 事業概要と市場背景</h2>
+    <p>成人ADHDは日本で急速に認知が広がっており、診断数は年々増加している。
+    しかし医療機関は「診断と投薬」に特化しており、
+    日常生活・仕事・人間関係をどう管理するかを継続支援するコーチは国内にほぼ存在しない。
+    米国・英国では「ADHD Coach」として独立した職業が確立されており、
+    ICF（国際コーチング連盟）やACAP（ADHD Coaches Organization）が認定資格を提供している。
+    主な顧客は「診断後、次のステップが見つからない30〜50代の社会人・会社員」。</p>
+  </div>
+
+  <div class="sec">
+    <h2>12. 潜在市場規模</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:35%">指標</th><th>数値・内容</th></tr>
+      <tr><td>成人ADHDの推計有病率</td><td>成人人口の約3〜5%。日本では400〜600万人が該当する可能性</td></tr>
+      <tr><td>診断を受けた成人（近年）</td><td>年間診断数が急増。精神科・心療内科の初診待ちは3〜6ヶ月が常態化</td></tr>
+      <tr><td>支払意向</td><td>月3〜8万円のコーチングに支払う意向のある層は「仕事に支障が出ている会社員」層に多い</td></tr>
+      <tr><td>競合コーチ数（日本）</td><td>推計50名未満（2026年時点）。需要に対して供給が圧倒的に不足</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>13. 収益モデル</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:30%">サービス</th><th>内容</th><th style="width:22%">単価目安</th></tr>
+      <tr><td>月次コーチングプラン</td><td>月2〜4回のオンラインセッション（各60分）＋メッセージサポート</td><td>3〜6万円/月</td></tr>
+      <tr><td>集中スタートプログラム</td><td>3ヶ月集中（週1セッション＋ツール設定支援）</td><td>15〜25万円/3ヶ月</td></tr>
+      <tr><td>英語対応プラン</td><td>在日外国人・バイリンガル向け。単価1.5〜2倍</td><td>8〜15万円/月</td></tr>
+      <tr><td>グループコーチング（将来）</td><td>5〜8名グループ。個別より低価格で提供し人数で収益を確保</td><td>1〜2万円/月・人</td></tr>
+    </table></div>
+    <p><strong>目標：</strong>個別クライアント15名 × 月4万円 ＝ 月60万円（1年以内）</p>
+  </div>
+
+  <div class="sec">
+    <h2>14. 資格取得ロードマップ</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:25%">資格</th><th>費用・期間</th><th>内容</th></tr>
+      <tr><td>ADHD-CCSP（日本）</td><td>5〜8万円・2〜3ヶ月</td><td>日本語。国内認知あり。最短ルート</td></tr>
+      <tr><td>ACO認定ADHDコーチ</td><td>10〜15万円・3〜4ヶ月</td><td>英語。国際資格。海外クライアント対応可</td></tr>
+      <tr><td>ICFコーチ資格（ACC）</td><td>15〜30万円・6〜12ヶ月</td><td>コーチング全般の国際資格。信頼性が高い</td></tr>
+    </table></div>
+    <p class="note">推奨：ADHD-CCPで開業 → 実績を積みながらICF-ACCを取得。英語対応は開業当初から可能。</p>
+  </div>
+
+  <div class="sec">
+    <h2>15. リスクと対策</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:35%">リスク</th><th>対策</th></tr>
+      <tr><td>「医療行為」との境界線</td><td>「診断・投薬の判断は医師へ」を明記。コーチは「行動・習慣・思考のサポート」に徹する</td></tr>
+      <tr><td>クライアントのメンタル不調</td><td>精神科医・心療内科と提携し、必要時に即リファーできる体制を事前に整備</td></tr>
+      <tr><td>自身がADHDでないと信頼されない懸念</td><td>資格・手法・成果で勝負。「当事者コーチ」でなく「専門コーチ」として訴求</td></tr>
+    </table></div>
+  </div>
+
+  <div class="page-footer">
+    <span>起業候補4事業 詳細レポート</span>
+    <span>4 / 6</span>
+  </div>
+</div>
+
+<!-- ======== P5: ポッドキャスト制作代行 ======== -->
+<div class="page">
+  <div class="page-header">
+    <div class="doc-title">起業候補4事業 詳細レポート</div>
+    <div class="doc-meta">作成：2026年6月　社外秘</div>
+  </div>
+
+  <div class="biz-header">④ ポッドキャスト制作代行 — 事業詳細</div>
+
+  <div class="kpi-row">
+    <div class="kpi-item"><span class="n">5〜10万</span><span class="l">初期投資（機材）</span></div>
+    <div class="kpi-item"><span class="n">2〜6週間</span><span class="l">収益化までの期間</span></div>
+    <div class="kpi-item"><span class="n">5〜20万</span><span class="l">月額/クライアント</span></div>
+    <div class="kpi-item"><span class="n">5〜10社</span><span class="l">目標クライアント数</span></div>
+  </div>
+
+  <div class="sec">
+    <h2>16. 事業概要と市場背景</h2>
+    <p>企業・経営者・専門家がポッドキャストを録音するだけで、
+    編集・サムネイル・各プラットフォームへの配信・文字起こし・SNS告知文作成まで全て代行するサービス。
+    米国では「Podcast Editor」「Podcast Producer」が確立した職種として存在し、
+    月額1,000〜5,000ドルが相場。日本ではビジネス系ポッドキャストが急増しているが、
+    制作代行サービスは少なく「録音したら自分で編集している」経営者が大半。</p>
+  </div>
+
+  <div class="sec">
+    <h2>17. 必要な機材と初期投資</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:30%">機材・ツール</th><th>内容</th><th style="width:22%">費用目安</th></tr>
+      <tr><td>コンデンサーマイク</td><td>Audio-Technica AT2020 など。クライアントへの貸出も可</td><td>1〜2万円</td></tr>
+      <tr><td>編集ソフト</td><td>Adobe Audition（月3,000円）またはDescript（月4,000円）。DscriptはAI自動編集が強力</td><td>月3〜4千円</td></tr>
+      <tr><td>文字起こしAI</td><td>Whisper API / Notta / Descript内蔵。日英両対応</td><td>月1〜3千円</td></tr>
+      <tr><td>配信管理</td><td>Anchor（無料）/ Buzzsprout（月2,000円）</td><td>0〜2千円/月</td></tr>
+    </table></div>
+    <p class="note">合計初期投資：機材2万円＋月額ツール1万円。クライアントに機材を持ち込んでもらう場合は機材費ゼロも可能。</p>
+  </div>
+
+  <div class="sec">
+    <h2>18. 収益モデル</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:30%">プラン</th><th>内容（月4本配信前提）</th><th style="width:22%">月額</th></tr>
+      <tr><td>ライトプラン</td><td>編集＋配信のみ。月4エピソード</td><td>3〜5万円/月</td></tr>
+      <tr><td>スタンダードプラン</td><td>編集＋配信＋文字起こし＋SNS告知文4本</td><td>8〜12万円/月</td></tr>
+      <tr><td>プレミアムプラン</td><td>上記＋サムネイル作成＋ニュースレター化＋月次分析レポート</td><td>15〜20万円/月</td></tr>
+      <tr><td>英語ポッドキャスト対応</td><td>在日外国人・グローバル企業向け。英語編集・海外配信最適化</td><td>20〜40万円/月</td></tr>
+    </table></div>
+    <p><strong>目標：</strong>スタンダード5社 × 月10万円 ＝ 月50万円（3ヶ月以内）</p>
+  </div>
+
+  <div class="sec">
+    <h2>19. 商社マンが有利な理由</h2>
+    <ul>
+      <li>ビジネス・経済・国際関係の知識があり、収録内容の文脈を正確に理解して編集できる</li>
+      <li>英語ポッドキャストの編集・海外配信（Spotify国際版・Apple Podcasts）に対応できる競合がほぼいない</li>
+      <li>法人営業の経験から、経営者・士業への直接アプローチができる</li>
+      <li>SNSゴーストライターと組み合わせると「収録→編集→SNS投稿まで」のワンストップ提案が可能</li>
+    </ul>
+  </div>
+
+  <div class="sec">
+    <h2>20. リスクと対策</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:35%">リスク</th><th>対策</th></tr>
+      <tr><td>編集スキルの学習コスト</td><td>Descriptは自動文字起こし＋カット編集が直感的。最初の1本は10〜15時間で習得可能</td></tr>
+      <tr><td>クライアントが「ポッドキャストをやめる」</td><td>最低3ヶ月契約を基本とする。常に新規2〜3社のパイプラインを維持する</td></tr>
+      <tr><td>AIツールの進化で単価下落</td><td>編集の自動化が進んでも「企画・構成・ゲスト選定・戦略」はなくならない。上流工程に移行する</td></tr>
+    </table></div>
+  </div>
+
+  <div class="page-footer">
+    <span>起業候補4事業 詳細レポート</span>
+    <span>5 / 6</span>
+  </div>
+</div>
+
+<!-- ======== P6: 統合ロードマップ・収益シミュレーション ======== -->
+<div class="page">
+  <div class="page-header">
+    <div class="doc-title">起業候補4事業 詳細レポート</div>
+    <div class="doc-meta">作成：2026年6月　社外秘</div>
+  </div>
+
+  <div class="sec">
+    <h2>21. 4事業 並行進行 12ヶ月ロードマップ</h2>
+    <div class="table-wrap"><table>
+      <tr>
+        <th style="width:10%">時期</th>
+        <th>AI自動化コンサル</th>
+        <th>ノマド移住サポート</th>
+        <th>ADHDコーチ</th>
+        <th>ポッドキャスト制作</th>
+      </tr>
+      <tr>
+        <td><strong>M1〜2</strong></td>
+        <td>副業開始。知人企業に無料導入 → 事例化</td>
+        <td>Reddit・Facebookグループで情報発信開始</td>
+        <td>資格コース申込・学習開始</td>
+        <td>機材購入。知人の収録を無料で代行 → 事例化</td>
+      </tr>
+      <tr>
+        <td><strong>M3〜4</strong></td>
+        <td>有料3社。月20〜30万円目標</td>
+        <td>初受注（スターターパック）。行政書士と提携契約</td>
+        <td>資格取得。モニター3名（格安）開始</td>
+        <td>有料3社。月20〜30万円目標</td>
+      </tr>
+      <tr>
+        <td><strong>M5〜6</strong></td>
+        <td>英語対応クライアント開拓。研修メニュー追加</td>
+        <td>月5件安定化。法人向け営業開始</td>
+        <td>有料10名。月収30〜40万円目標</td>
+        <td>英語ポッドキャスト対応開始</td>
+      </tr>
+      <tr>
+        <td><strong>M7〜12</strong></td>
+        <td colspan="4" style="text-align:center;"><strong>最も伸びている2事業に絞り込む。月収が現給与を超えた時点で退職判断。</strong></td>
+      </tr>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>22. 収益シミュレーション（12ヶ月後・月収）</h2>
+    <div class="table-wrap"><table>
+      <tr>
+        <th style="width:18%">シナリオ</th>
+        <th style="width:25%">前提</th>
+        <th>6ヶ月後</th>
+        <th>12ヶ月後</th>
+        <th>退職判断</th>
+      </tr>
+      <tr>
+        <td><strong>保守</strong></td>
+        <td>AI自動化のみ・3社</td>
+        <td>20〜30万円</td>
+        <td>30〜50万円</td>
+        <td>継続副業</td>
+      </tr>
+      <tr>
+        <td><strong>標準</strong></td>
+        <td>AI自動化5社＋ポッドキャスト3社</td>
+        <td>40〜60万円</td>
+        <td>70〜100万円</td>
+        <td>10〜12ヶ月で退職</td>
+      </tr>
+      <tr>
+        <td class="grn"><strong>楽観</strong></td>
+        <td>4事業並行＋英語案件獲得</td>
+        <td>70〜100万円</td>
+        <td>120〜200万円</td>
+        <td>6〜8ヶ月で退職</td>
+      </tr>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>23. 組み合わせシナジー</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:40%">組み合わせ</th><th>相乗効果</th></tr>
+      <tr>
+        <td>AI自動化コンサル × ポッドキャスト制作</td>
+        <td>ポッドキャスト制作をAIで自動化しコストを下げながら、クライアントにAI導入も提案できる。1社で2サービスを受注可能</td>
+      </tr>
+      <tr>
+        <td>ノマド移住サポート × ADHDコーチ</td>
+        <td>新環境への適応に悩む外国人移住者にADHDコーチングを提供。英語対応で高単価が取れる</td>
+      </tr>
+      <tr>
+        <td>全4事業 × 英語対応</td>
+        <td>日本語版の競合は増えるが、英語対応はどの事業でも参入障壁が高い。商社マンの英語力が全事業で差別化要因になる</td>
+      </tr>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>24. 今月の3アクション</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:5%">#</th><th>アクション</th><th style="width:20%">期限</th></tr>
+      <tr>
+        <td class="b grn">1</td>
+        <td>ChatGPT Plus・Claude Pro・Zapierに登録。自社の業務を1つ自動化して「ビフォーアフター」を記録する（AI自動化コンサルの第1事例）</td>
+        <td>今週中</td>
+      </tr>
+      <tr>
+        <td class="b grn">2</td>
+        <td>Redditの「r/digitalnomad」に登録し、「Japan Digital Nomad Visa 2026 — AMA」スレッドを立てる（ノマドサポートの集客実験）</td>
+        <td>2週間以内</td>
+      </tr>
+      <tr>
+        <td class="b grn">3</td>
+        <td>知人の経営者・士業でポッドキャストをやっている人に「無料で1本編集させてください」と声をかける（ポッドキャスト制作の第1事例）</td>
+        <td>今月末</td>
+      </tr>
+    </table></div>
+  </div>
+
+  <div class="page-footer">
+    <span>起業候補4事業 詳細レポート</span>
+    <span>6 / 6</span>
+  </div>
+</div>
+
+</body>
+</html>

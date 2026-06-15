@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>起業候補3事業 詳細レポート</title>
+<style>
+  :root { --green: #2e7d5e; }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP','Yu Gothic',sans-serif;
+    font-size:10pt;
+    line-height:1.75;
+    color:#111;
+    background:#fff;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .page {
+    width:210mm; min-height:297mm;
+    margin:0 auto;
+    padding:18mm 18mm 15mm;
+    page-break-after:always;
+    display:flex; flex-direction:column;
+  }
+  .page:last-child { page-break-after:auto; }
+
+  @media print {
+    body { margin:0; }
+    .page { width:210mm; height:297mm; margin:0; padding:18mm 18mm 15mm; }
+  }
+  @media screen {
+    body { background:#ccc; padding:10mm 0; }
+    .page { box-shadow:0 2px 12px rgba(0,0,0,.2); margin-bottom:6mm; background:#fff; }
+  }
+
+  /* ===== スマホ対応 ===== */
+  @media screen and (max-width: 700px) {
+    body { background:#fff; padding:0; }
+    .page {
+      width:100%; min-height:unset;
+      padding:16px 14px 20px;
+      box-shadow:none;
+      margin-bottom:0;
+      border-bottom:6px solid #eee;
+    }
+    .page:last-child { border-bottom:none; }
+    body        { font-size:14px; }
+    .doc-title  { font-size:15px !important; }
+    .doc-meta   { font-size:11px !important; }
+    h2          { font-size:14px !important; }
+    h3          { font-size:13px !important; }
+    p, li       { font-size:13px !important; }
+    .note       { font-size:11px !important; }
+    .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:4mm; }
+    table       { font-size:12px; min-width:480px; }
+    th, td      { padding:6px 8px; }
+    .kpi-row    { flex-wrap:wrap; }
+    .kpi-item   { flex:1 1 45%; border-bottom:1px solid #bbb; }
+    .kpi-item .n { font-size:20px !important; }
+    .conclusion-body { font-size:13px !important; }
+    .rank-grid  { grid-template-columns:1fr !important; }
+  }
+
+  .page-header {
+    border-bottom:2px solid #111;
+    padding-bottom:3mm;
+    margin-bottom:6mm;
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    flex-wrap:wrap;
+    gap:4px;
+  }
+  .doc-title { font-size:13pt; font-weight:700; }
+  .doc-meta  { font-size:8pt; color:#555; }
+
+  .conclusion {
+    border:2px solid var(--green);
+    padding:10px 14px;
+    margin-bottom:6mm;
+  }
+  .conclusion-label {
+    font-size:8pt; font-weight:700; color:var(--green);
+    letter-spacing:.1em; margin-bottom:4px;
+  }
+  .conclusion-body { font-size:9.5pt; line-height:1.7; }
+  .conclusion-body strong { color:var(--green); }
+
+  .biz-header {
+    background:var(--green);
+    color:#fff;
+    padding:6px 12px;
+    font-size:11pt;
+    font-weight:700;
+    margin-bottom:4mm;
+  }
+
+  .sec { margin-bottom:5mm; }
+  h2 {
+    font-size:10.5pt; font-weight:700;
+    border-bottom:1px solid #111;
+    padding-bottom:2px; margin-bottom:3mm;
+  }
+  h3 {
+    font-size:10pt; font-weight:700;
+    margin-bottom:2mm; color:var(--green);
+  }
+  p  { font-size:9.5pt; margin-bottom:2mm; color:#222; }
+  ul { padding-left:1.2em; margin-bottom:2mm; }
+  li { font-size:9.5pt; color:#222; margin-bottom:1mm; }
+
+  .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  table { width:100%; border-collapse:collapse; font-size:9pt; margin-bottom:3mm; }
+  th {
+    border:1px solid #888;
+    padding:5px 8px;
+    background:#f0f0f0;
+    font-weight:700; text-align:left;
+    font-size:8.5pt;
+  }
+  td { border:1px solid #bbb; padding:5px 8px; vertical-align:top; }
+  td.r  { text-align:right; }
+  td.b  { font-weight:700; }
+  td.rb { text-align:right; font-weight:700; }
+  td.grn { color:var(--green); font-weight:700; }
+
+  .kpi-row {
+    display:flex; gap:0; border:1px solid #bbb; margin-bottom:4mm;
+  }
+  .kpi-item {
+    flex:1; padding:8px 12px; border-right:1px solid #bbb; text-align:center;
+  }
+  .kpi-item:last-child { border-right:none; }
+  .kpi-item .n { font-size:16pt; font-weight:700; color:var(--green); display:block; line-height:1.2; }
+  .kpi-item .l { font-size:8pt; color:#555; }
+
+  .note { font-size:8pt; color:#555; margin-bottom:2mm; }
+
+  .rank-grid {
+    display:grid; grid-template-columns:1fr 1fr 1fr;
+    gap:0; border:1px solid #bbb; margin-bottom:4mm;
+  }
+  .rank-item {
+    padding:10px 12px; border-right:1px solid #bbb;
+    text-align:center;
+  }
+  .rank-item:last-child { border-right:none; }
+  .rank-num { font-size:20pt; font-weight:700; color:var(--green); display:block; line-height:1.1; }
+  .rank-name { font-size:9pt; font-weight:700; margin:3px 0; }
+  .rank-sub  { font-size:8pt; color:#555; }
+
+  .timeline { display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid #bbb; margin-bottom:3mm; }
+  .tl-item  { padding:8px 10px; border-bottom:1px solid #bbb; border-right:1px solid #bbb; }
+  .tl-item:nth-child(even) { border-right:none; }
+  .tl-item:nth-last-child(-n+2) { border-bottom:none; }
+  .tl-ph   { font-size:8pt; font-weight:700; color:var(--green); margin-bottom:3px; }
+  .tl-task { font-size:8.5pt; color:#222; padding:1px 0; }
+  .tl-task::before { content:"・"; color:#888; }
+
+  .page-footer {
+    margin-top:auto; padding-top:3mm;
+    border-top:1px solid #bbb;
+    display:flex; justify-content:space-between;
+    font-size:8pt; color:#777;
+  }
+
+  hr { border:none; border-top:1px solid #ddd; margin:4mm 0; }
+</style>
+</head>
+<body>
+
+<!-- ======== P1: 結論・比較サマリー ======== -->
+<div class="page">
+  <div class="page-header">
+    <div class="doc-title">起業候補3事業 詳細レポート</div>
+    <div class="doc-meta">作成：2026年6月　社外秘</div>
+  </div>
+
+  <div class="conclusion">
+    <div class="conclusion-label">■ 結論</div>
+    <div class="conclusion-body">
+      3事業はいずれも初期投資10万円以下で開始可能。
+      <strong>最優先推奨は「SNSゴーストライター」</strong>——即日収益化が可能で、商社マンの文章力・英語力・業界知識を直接マネタイズできる。
+      副業として今月から開始し、月収30万円を確認してから退職するのが最低リスクの戦略。
+      「乳幼児ねんねコンサル」は日本最大の潜在市場だが資格取得の準備期間が必要。
+      「エロープメント婚プランナー」は高単価だが市場教育コストが高い。
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>推奨順位</h2>
+    <div class="rank-grid">
+      <div class="rank-item">
+        <span class="rank-num">1st</span>
+        <div class="rank-name">SNSゴーストライター</div>
+        <div class="rank-sub">即日開始・最速収益化</div>
+      </div>
+      <div class="rank-item">
+        <span class="rank-num">2nd</span>
+        <div class="rank-name">乳幼児ねんねコンサル</div>
+        <div class="rank-sub">市場規模最大・単価高</div>
+      </div>
+      <div class="rank-item">
+        <span class="rank-num">3rd</span>
+        <div class="rank-name">エロープメント婚プランナー</div>
+        <div class="rank-sub">高単価・市場形成中</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>3事業 比較一覧</h2>
+    <div class="table-wrap"><table>
+      <tr>
+        <th style="width:22%">評価軸</th>
+        <th>SNSゴーストライター</th>
+        <th>乳幼児ねんねコンサル</th>
+        <th>エロープメント婚プランナー</th>
+      </tr>
+      <tr><td class="b">初期投資</td><td class="grn">ほぼ0円</td><td>5〜15万円（資格）</td><td class="grn">ほぼ0円</td></tr>
+      <tr><td class="b">収益化までの期間</td><td class="grn">1〜4週間</td><td>3〜6ヶ月</td><td>2〜6ヶ月</td></tr>
+      <tr><td class="b">月収ポテンシャル</td><td>30〜100万円</td><td class="grn">50〜150万円</td><td>20〜80万円</td></tr>
+      <tr><td class="b">市場の認知度（日本）</td><td>中</td><td class="grn">低（先行者有利）</td><td>低（市場形成中）</td></tr>
+      <tr><td class="b">商社マン適性</td><td class="grn">◎ 文章力・英語・業界知識</td><td>○ 資料作成・英語輸入</td><td class="grn">◎ 交渉・段取り・英語</td></tr>
+      <tr><td class="b">副業スタート可否</td><td class="grn">可</td><td>可（資格取得と並行）</td><td>可</td></tr>
+      <tr><td class="b">スケール可否</td><td>○ 外注化でエージェンシー化</td><td class="grn">◎ オンライン受講化</td><td>△ 属人性が高い</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>推奨戦略：3事業を並行して動かす</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:20%">時期</th><th>アクション</th></tr>
+      <tr><td><strong>今月</strong></td><td>SNSゴーストライターとして副業開始。最初の2クライアントを獲得する</td></tr>
+      <tr><td><strong>3ヶ月後</strong></td><td>乳幼児ねんね資格の取得開始。エロープメント婚の市場調査・SNS発信開始</td></tr>
+      <tr><td><strong>6ヶ月後</strong></td><td>3事業合計月収が現給与の50%を超えたら退職準備へ</td></tr>
+      <tr><td><strong>12ヶ月後</strong></td><td>退職。収益性の高い1〜2事業に集中</td></tr>
+    </table></div>
+  </div>
+
+  <div class="page-footer">
+    <span>起業候補3事業 詳細レポート</span>
+    <span>1 / 5</span>
+  </div>
+</div>
+
+<!-- ======== P2: SNSゴーストライター ======== -->
+<div class="page">
+  <div class="page-header">
+    <div class="doc-title">起業候補3事業 詳細レポート</div>
+    <div class="doc-meta">作成：2026年6月　社外秘</div>
+  </div>
+
+  <div class="biz-header">① SNSゴーストライター — 事業詳細</div>
+
+  <div class="kpi-row">
+    <div class="kpi-item"><span class="n">0円</span><span class="l">初期投資</span></div>
+    <div class="kpi-item"><span class="n">1週間</span><span class="l">収益化までの期間</span></div>
+    <div class="kpi-item"><span class="n">5〜30万</span><span class="l">月収/クライアント</span></div>
+    <div class="kpi-item"><span class="n">3〜5件</span><span class="l">目標クライアント数</span></div>
+  </div>
+
+  <div class="sec">
+    <h2>1. 事業概要</h2>
+    <p>経営者・士業・専門家の代わりにSNS（主にLinkedIn・X・Instagram）の投稿文を作成・運用するサービス。
+    クライアントはアイデアや知識を提供し、ゴーストライターがそれを読み応えある文章に変換する。
+    欧米では月額3,000〜10,000ドルが相場の確立したビジネスモデル。日本では認知が広がり始めた段階。</p>
+  </div>
+
+  <div class="sec">
+    <h2>2. 収益モデル</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:30%">サービス</th><th>内容</th><th style="width:22%">単価目安</th></tr>
+      <tr><td>月次運用プラン（基本）</td><td>月12〜20投稿の作成・スケジュール設定</td><td>5〜10万円/月</td></tr>
+      <tr><td>月次運用プラン（プレミアム）</td><td>上記＋英語対応・DM返信代行</td><td>15〜30万円/月</td></tr>
+      <tr><td>スポットコンテンツ作成</td><td>バズ狙い投稿・note記事・プロフィール文</td><td>3〜10万円/件</td></tr>
+      <tr><td>英語専門（外国人クライアント）</td><td>日本在住外国人経営者向け・海外クライアント</td><td>30〜80万円/月</td></tr>
+    </table></div>
+    <p><strong>目標：</strong>クライアント5件 × 月10万円 = 月収50万円（6ヶ月以内）</p>
+  </div>
+
+  <div class="sec">
+    <h2>3. 商社マンが有利な理由</h2>
+    <ul>
+      <li>文章を書き続けてきたキャリア（社内報告書・英文メール・提案書）が直接活きる</li>
+      <li>業界知識（商社・貿易・製造業・インフラ）を持つゴーストライターは希少</li>
+      <li>英語でも日本語でも書けることで、外資系企業の日本人役員・外国人起業家を狙える</li>
+      <li>法人営業の経験からクライアント開拓の動き方がわかっている</li>
+    </ul>
+  </div>
+
+  <div class="sec">
+    <h2>4. 最初の30日アクション</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:20%">期間</th><th>アクション</th><th style="width:25%">目標</th></tr>
+      <tr><td>Week 1</td><td>自分のLinkedIn・Xを整備。「ゴーストライター募集中」のポストを3本投稿。過去の職場の知人に声かけ</td><td>サンプル投稿3本作成</td></tr>
+      <tr><td>Week 2</td><td>無料or格安（1〜2万円）でモニタークライアント1名獲得。実績作りに集中</td><td>初受注</td></tr>
+      <tr><td>Week 3〜4</td><td>モニターの成果（いいね数・フォロワー増加）をケーススタディ化。正規価格で2件目を獲得</td><td>月5万円達成</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>5. リスクと対策</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:35%">リスク</th><th>対策</th></tr>
+      <tr><td>「自分で書けばいい」と思われる</td><td>「あなたの時給を計算してください」と提案。時間単価換算で外注が得と納得させる</td></tr>
+      <tr><td>クライアントが成果に不満</td><td>初月は「30日無条件返金保証」を付けてリスクを下げる</td></tr>
+      <tr><td>解約によるキャッシュ変動</td><td>最低3ヶ月契約を基本とする。常に新規開拓を続ける</td></tr>
+    </table></div>
+  </div>
+
+  <div class="page-footer">
+    <span>起業候補3事業 詳細レポート</span>
+    <span>2 / 5</span>
+  </div>
+</div>
+
+<!-- ======== P3: 乳幼児ねんねコンサル ======== -->
+<div class="page">
+  <div class="page-header">
+    <div class="doc-title">起業候補3事業 詳細レポート</div>
+    <div class="doc-meta">作成：2026年6月　社外秘</div>
+  </div>
+
+  <div class="biz-header">② 乳幼児ねんねコンサルタント — 事業詳細</div>
+
+  <div class="kpi-row">
+    <div class="kpi-item"><span class="n">5〜15万</span><span class="l">初期投資（資格）</span></div>
+    <div class="kpi-item"><span class="n">3〜6ヶ月</span><span class="l">収益化までの期間</span></div>
+    <div class="kpi-item"><span class="n">3〜8万</span><span class="l">1件あたり単価</span></div>
+    <div class="kpi-item"><span class="n">月20〜30件</span><span class="l">スケール時の目標</span></div>
+  </div>
+
+  <div class="sec">
+    <h2>6. 事業概要</h2>
+    <p>生後0〜3歳の赤ちゃんの睡眠問題（夜泣き・寝かしつけ・授乳）を解決するコンサルティングサービス。
+    米国・英国では「Sleep Consultant」として独立した職業として確立されており、1パッケージ300〜1,000ドルが相場。
+    日本ではオンライン相談が増え始めたが、体系的なサービスを提供する専門家はまだ少ない。
+    子育て中の共働き家庭・富裕層・外国人在日家族が主な顧客層。</p>
+  </div>
+
+  <div class="sec">
+    <h2>7. 市場規模と参入機会</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:30%">指標</th><th>数値・内容</th></tr>
+      <tr><td>日本の年間出生数</td><td>約72万人（2025年推計）。睡眠に悩む親の割合は約70%と言われる</td></tr>
+      <tr><td>潜在顧客数</td><td>0〜1歳児の家庭のうち悩みを持つ層：推計30〜40万家庭/年</td></tr>
+      <tr><td>支払意向</td><td>睡眠改善に3〜10万円を支払う意向のある家庭は富裕層・共働き層中心に増加中</td></tr>
+      <tr><td>競合の少なさ</td><td>日本語で活動するプロのねんねコンサルは推計100名未満（2026年時点）</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>8. 収益モデル</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:30%">サービス</th><th>内容</th><th style="width:22%">単価目安</th></tr>
+      <tr><td>スタータープラン</td><td>60分オンライン相談＋カスタム睡眠計画書</td><td>1.5〜3万円</td></tr>
+      <tr><td>2週間フォローパッケージ</td><td>初回面談＋2週間メールサポート＋計画調整</td><td>5〜8万円</td></tr>
+      <tr><td>プレミアムパッケージ</td><td>1ヶ月完全サポート（電話・LINE・随時相談）</td><td>10〜15万円</td></tr>
+      <tr><td>英語対応プラン（在日外国人向け）</td><td>上記の英語版。単価1.5〜2倍が見込める</td><td>15〜20万円</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>9. 資格取得ルート</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:30%">資格</th><th>費用・期間</th><th>特徴</th></tr>
+      <tr><td>ねんねのプロ認定（日本）</td><td>5〜8万円・2〜3ヶ月</td><td>日本語。国内認知あり</td></tr>
+      <tr><td>IPHI認定（国際資格）</td><td>10〜15万円・3〜4ヶ月</td><td>英語。海外クライアントに強い</td></tr>
+      <tr><td>The Sleep Lady認定（米国）</td><td>10〜12万円・2〜3ヶ月</td><td>英語。欧米の実績が豊富</td></tr>
+    </table></div>
+    <p class="note">推奨：日本語資格で開業 → 実績を積みながらIPHI資格を取得し英語市場に拡大</p>
+  </div>
+
+  <div class="sec">
+    <h2>10. リスクと対策</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:35%">リスク</th><th>対策</th></tr>
+      <tr><td>「成果が出なかった」クレーム</td><td>「行動保証」（毎日記録を送ること）を条件とし、守らない場合は返金対象外と明記</td></tr>
+      <tr><td>子育て未経験だと信頼されない</td><td>資格・実績・口コミを前面に出す。性別・子育て経験より「専門知識」で勝負</td></tr>
+      <tr><td>季節変動（出生数の季節差）</td><td>SNSゴーストライターと兼業でキャッシュを安定させる</td></tr>
+    </table></div>
+  </div>
+
+  <div class="page-footer">
+    <span>起業候補3事業 詳細レポート</span>
+    <span>3 / 5</span>
+  </div>
+</div>
+
+<!-- ======== P4: エロープメント婚プランナー ======== -->
+<div class="page">
+  <div class="page-header">
+    <div class="doc-title">起業候補3事業 詳細レポート</div>
+    <div class="doc-meta">作成：2026年6月　社外秘</div>
+  </div>
+
+  <div class="biz-header">③ エロープメント・ウェディングプランナー — 事業詳細</div>
+
+  <div class="kpi-row">
+    <div class="kpi-item"><span class="n">ほぼ0円</span><span class="l">初期投資</span></div>
+    <div class="kpi-item"><span class="n">2〜6ヶ月</span><span class="l">収益化までの期間</span></div>
+    <div class="kpi-item"><span class="n">10〜50万</span><span class="l">1件あたり単価</span></div>
+    <div class="kpi-item"><span class="n">月3〜8件</span><span class="l">スケール時の目標</span></div>
+  </div>
+
+  <div class="sec">
+    <h2>11. 事業概要</h2>
+    <p>「Elopement」とは、招待客を呼ばない2人だけ（または家族数名）の結婚式を指す。
+    米国ではコロナ後に急増し、現在は「スタイルの選択」として定着。
+    欧米では専業プランナーが多数存在し、1件10,000〜30,000ドルのプランニング料を受け取る。
+    日本では「少人数婚」「フォトウェディング」は普及しているが、
+    完全に2人のみで海外や国内の絶景ロケーションで行うエロープメント婚のプロは存在しない。
+    在日外国人カップルや訪日外国人の「日本でのエロープメント」ニーズが特に高い。</p>
+  </div>
+
+  <div class="sec">
+    <h2>12. ターゲット顧客と需要</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:30%">顧客層</th><th>ニーズ</th><th style="width:25%">支払意向</th></tr>
+      <tr><td>在日外国人カップル</td><td>日本の自然・文化を背景にした結婚式。英語対応が必須</td><td>50〜150万円/件</td></tr>
+      <tr><td>訪日旅行中の外国人カップル</td><td>旅行中に結婚式も済ませたい。1週間以内の手配が必要</td><td>30〜80万円/件</td></tr>
+      <tr><td>日本人カップル（親族問題）</td><td>複雑な家族関係から逃れて2人だけで済ませたい</td><td>15〜40万円/件</td></tr>
+      <tr><td>再婚カップル</td><td>派手にやりたくないが記念にしたい</td><td>10〜30万円/件</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>13. 収益モデル</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:30%">サービス</th><th>内容</th><th style="width:22%">プランニング料</th></tr>
+      <tr><td>ベーシックプラン</td><td>ロケーション選定・法的手続きサポート・当日タイムライン作成</td><td>10〜20万円</td></tr>
+      <tr><td>フルプランニング</td><td>上記＋カメラマン・花・ドレスの手配・通訳・食事予約</td><td>30〜50万円</td></tr>
+      <tr><td>インターナショナルパッケージ</td><td>完全英語対応・京都/奈良/富士山ロケ・ビザサポート</td><td>50〜150万円</td></tr>
+    </table></div>
+    <p class="note">※ プランニング料のみが収益。花・カメラマン等の実費は全てクライアント負担として分離する</p>
+  </div>
+
+  <div class="sec">
+    <h2>14. 商社マンが有利な理由</h2>
+    <ul>
+      <li>英語での交渉・連絡・契約書作成が当たり前にできる（競合との最大の差別化）</li>
+      <li>複数業者（カメラマン・神社・ホテル）を同時調整する段取り力は商社の日常業務そのもの</li>
+      <li>海外人脈・在日外国人コミュニティへのアクセスが既にある</li>
+      <li>法的手続き（婚姻届・外国人の書類）の調査・確認は商社の契約実務に近い</li>
+    </ul>
+  </div>
+
+  <div class="sec">
+    <h2>15. リスクと対策</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:35%">リスク</th><th>対策</th></tr>
+      <tr><td>市場が日本にまだない（認知コスト）</td><td>「Instagram × 英語発信」で海外からインバウンド需要を直接取る。日本市場の教育は後回し</td></tr>
+      <tr><td>当日のトラブル（雨・業者キャンセル）</td><td>全業者に代替案を必ず1件確保。契約書に天候免責条項を明記</td></tr>
+      <tr><td>件数の季節変動</td><td>春・秋に集中する。閑散期はSNSゴーストライターで収益補完</td></tr>
+    </table></div>
+  </div>
+
+  <div class="page-footer">
+    <span>起業候補3事業 詳細レポート</span>
+    <span>4 / 5</span>
+  </div>
+</div>
+
+<!-- ======== P5: 12ヶ月ロードマップ・財務シミュレーション ======== -->
+<div class="page">
+  <div class="page-header">
+    <div class="doc-title">起業候補3事業 詳細レポート</div>
+    <div class="doc-meta">作成：2026年6月　社外秘</div>
+  </div>
+
+  <div class="sec">
+    <h2>16. 3事業 並行進行 12ヶ月ロードマップ</h2>
+    <div class="table-wrap"><table>
+      <tr>
+        <th style="width:12%">時期</th>
+        <th>SNSゴーストライター</th>
+        <th>ねんねコンサル</th>
+        <th>エロープメント婚</th>
+      </tr>
+      <tr>
+        <td><strong>M1〜2</strong></td>
+        <td>副業開始。モニター獲得→正規契約2件</td>
+        <td>資格コース申込・学習開始</td>
+        <td>市場調査・Instagram英語発信開始</td>
+      </tr>
+      <tr>
+        <td><strong>M3〜4</strong></td>
+        <td>クライアント5件・月収30万円目標</td>
+        <td>資格取得・モニター相談1〜2件（無料）</td>
+        <td>カメラマン・神社・ホテルとネットワーク構築</td>
+      </tr>
+      <tr>
+        <td><strong>M5〜6</strong></td>
+        <td>英語対応クライアント開拓</td>
+        <td>有料スタート。月5件目標</td>
+        <td>初受注（外国人カップル）目標</td>
+      </tr>
+      <tr>
+        <td><strong>M7〜9</strong></td>
+        <td>外注化検討。エージェンシー化の準備</td>
+        <td>英語対応プラン追加。月収50万円目標</td>
+        <td>月2〜3件安定化</td>
+      </tr>
+      <tr>
+        <td><strong>M10〜12</strong></td>
+        <td colspan="3" style="text-align:center;"><strong>3事業合計の月収が現給与を超えた時点で退職判断。最も伸びている1〜2事業に集中</strong></td>
+      </tr>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>17. 収益シミュレーション（保守・標準・楽観）</h2>
+    <div class="table-wrap"><table>
+      <tr>
+        <th style="width:18%">シナリオ</th>
+        <th style="width:22%">前提</th>
+        <th>6ヶ月後 月収</th>
+        <th>12ヶ月後 月収</th>
+        <th>退職判断</th>
+      </tr>
+      <tr>
+        <td><strong>保守</strong></td>
+        <td>ゴーストライター3件のみ</td>
+        <td>15〜20万円</td>
+        <td>25〜35万円</td>
+        <td>継続副業。慎重に様子見</td>
+      </tr>
+      <tr>
+        <td><strong>標準</strong></td>
+        <td>ゴースト5件＋ねんね5件</td>
+        <td>35〜50万円</td>
+        <td>60〜80万円</td>
+        <td>12ヶ月後に退職可</td>
+      </tr>
+      <tr>
+        <td class="grn"><strong>楽観</strong></td>
+        <td>3事業フル稼働＋英語案件獲得</td>
+        <td>60〜80万円</td>
+        <td>100〜150万円</td>
+        <td>8〜10ヶ月で退職</td>
+      </tr>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>18. 今月やること（3アクション）</h2>
+    <div class="table-wrap"><table>
+      <tr><th style="width:5%">#</th><th>アクション</th><th style="width:25%">期限</th></tr>
+      <tr>
+        <td class="b grn">1</td>
+        <td>LinkedInプロフィールを「SNSゴーストライター」として整備し、過去の商社実績を強みとして記載する</td>
+        <td>今週中</td>
+      </tr>
+      <tr>
+        <td class="b grn">2</td>
+        <td>知人の経営者・士業・専門家3名に「SNS運用のお手伝いをしたい」と声かけ。無料で1ヶ月試してもらう</td>
+        <td>2週間以内</td>
+      </tr>
+      <tr>
+        <td class="b grn">3</td>
+        <td>乳幼児ねんね資格の資料請求・コース比較を完了し、受講申込日程を決める</td>
+        <td>今月末</td>
+      </tr>
+    </table></div>
+  </div>
+
+  <div class="sec">
+    <h2>19. 総評</h2>
+    <p>3事業は互いに相性が良い。SNSゴーストライターは即収益化できるため、在職中の「橋渡し収入」として最適。
+    乳幼児ねんねコンサルは日本市場がほぼ空白であり、今から参入すれば2〜3年後に市場リーダーになれる可能性がある。
+    エロープメント婚は件数こそ少ないが1件あたりの単価が高く、英語力という参入障壁が商社マンには存在しない。
+    3事業を並行して試し、反応を見て絞るのが最も合理的な戦略。</p>
+  </div>
+
+  <div class="page-footer">
+    <span>起業候補3事業 詳細レポート</span>
+    <span>5 / 5</span>
+  </div>
+</div>
+
+</body>
+</html>
